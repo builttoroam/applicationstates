@@ -116,6 +116,7 @@
     <Compile Include="BasePage.cs" />
     <Compile Include="FrameNavigation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VisualStateChanger.cs" />
     <Content Include="Properties\BuiltToRoam.Lifecycle.UWP.rd.xml" />
   </ItemGroup>
   <ItemGroup>

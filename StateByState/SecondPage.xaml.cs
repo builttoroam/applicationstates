@@ -14,9 +14,24 @@ namespace StateByState
             this.InitializeComponent();
         }
 
-        private void BackClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void ToFirstClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            (ViewModel as SecondViewModel).GoBack();
+            (DataContext as SecondViewModel).ToFirst();
+        }
+        private void ToSecondClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            (DataContext as SecondViewModel).ToSecond();
+
+        }
+        private void ToThirdClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            (DataContext as SecondViewModel).ToThird();
+
+        }
+
+        private void DoneClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            (DataContext as SecondViewModel).Done();
         }
     }
 }

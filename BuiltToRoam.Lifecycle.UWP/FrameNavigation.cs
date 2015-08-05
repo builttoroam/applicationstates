@@ -28,6 +28,7 @@ namespace BuiltToRoam.Lifecycle
             }
             Application.Current.Resources[registerAs] = this;
             RootFrame = rootFrame;
+            RootFrame.Tag = registerAs;
             StateManager = stateManager;
             StateManager.StateChanged += StateManager_StateChanged;
         }

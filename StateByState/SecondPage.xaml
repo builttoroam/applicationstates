@@ -9,8 +9,79 @@
     xmlns:lifecycle="using:BuiltToRoam.Lifecycle"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-<TextBlock Text="Second Page" Foreground="Green" />
-        <Button Click="BackClick">Back</Button>
-    </Grid>
+    <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="VisualStateGroup">
+                <VisualState x:Name="State1">
+                    <Storyboard>
+                        <ColorAnimation Duration="0"
+                                        To="Blue"
+                                        Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                        Storyboard.TargetName="textBlock"
+                                        d:IsOptimized="True" />
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="State2">
+                    <Storyboard>
+                        <ColorAnimation Duration="0"
+                                        To="#FFFF008B"
+                                        Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                        Storyboard.TargetName="textBlock"
+                                        d:IsOptimized="True" />
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="State3">
+                    <Storyboard>
+                        <ColorAnimation Duration="0"
+                                        To="#FFFFC500"
+                                        Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                        Storyboard.TargetName="textBlock"
+                                        d:IsOptimized="True" />
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="VisualStateGroup2">
+                <VisualState x:Name="StateX">
+                    <Storyboard>
+                        <ColorAnimation Duration="0"
+                                        To="Blue"
+                                        Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                        Storyboard.TargetName="textBlock2"
+                                        d:IsOptimized="True" />
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="StateY">
+                    <Storyboard>
+                        <ColorAnimation Duration="0"
+                                        To="#FFFF008B"
+                                        Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                        Storyboard.TargetName="textBlock2"
+                                        d:IsOptimized="True" />
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="StateZ">
+                    <Storyboard>
+                        <ColorAnimation Duration="0"
+                                        To="#FFFFC500"
+                                        Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                        Storyboard.TargetName="textBlock2"
+                                        d:IsOptimized="True" />
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <TextBlock Text="{Binding Name}"
+                   x:Name="textBlock"
+                   FontSize="30"
+                   Foreground="Blue" />
+        <TextBlock x:Name="textBlock2"
+                   Text="Test 1 2 3 4"
+                   FontSize="30"
+                   Foreground="Blue" />
+        <Button Click="ToFirstClick">To First</Button>
+        <Button Click="ToSecondClick">To Second</Button>
+        <Button Click="ToThirdClick">To Third</Button>
+        <Button Click="DoneClick">Done</Button>
+    </StackPanel>
+
 </lifecycle:BasePage>
