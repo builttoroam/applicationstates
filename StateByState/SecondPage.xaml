@@ -1,0 +1,16 @@
+﻿<lifecycle:BasePage
+    x:Class="StateByState.SecondPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:StateByState"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uwp="using:BuiltToRoam.Lifecycle.UWP"
+    xmlns:lifecycle="using:BuiltToRoam.Lifecycle"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+<TextBlock Text="Second Page" Foreground="Green" />
+        <Button Click="BackClick">Back</Button>
+    </Grid>
+</lifecycle:BasePage>
