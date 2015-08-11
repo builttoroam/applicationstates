@@ -82,6 +82,10 @@
         <Button Click="ToSecondClick">To Second</Button>
         <Button Click="ToThirdClick">To Third</Button>
         <Button Click="DoneClick">Done</Button>
+        <Button Click="{x:Bind CurrentViewModel.XtoZ}">X To Z</Button>
+        <Button Click="{x:Bind CurrentViewModel.YtoZ}">Y To Z</Button>
+        <Button Click="{x:Bind CurrentViewModel.ZtoY}">Z To Y</Button>
+        <Button Click="{x:Bind CurrentViewModel.YtoX}">Y To X</Button>
     </StackPanel>
 
 </lifecycle:BasePage>

@@ -74,6 +74,7 @@ namespace StateByState
                 var fn = new FrameNavigation<PageStates, PageTransitions>(rootFrame, core);
                 fn.Register<MainPage>(PageStates.Main);
                 fn.Register<SecondPage>(PageStates.Second);
+                fn.Register<ThirdPage>(PageStates.Third);
                 core.Start();
 
 

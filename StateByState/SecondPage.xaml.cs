@@ -14,6 +14,9 @@ namespace StateByState
             this.InitializeComponent();
         }
 
+        public SecondViewModel CurrentViewModel =>DataContext as SecondViewModel;
+
+
         private void ToFirstClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             (DataContext as SecondViewModel).ToFirst();

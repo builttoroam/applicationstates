@@ -19,5 +19,11 @@ namespace StateByState
         {
             (ViewModel as MainViewModel)?.Test();
         }
+
+        private void ThreeClick(object sender, RoutedEventArgs e)
+        {
+            (ViewModel as MainViewModel)?.Three();
+        }
     }
+    
 }

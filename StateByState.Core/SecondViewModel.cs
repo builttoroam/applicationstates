@@ -21,7 +21,11 @@ namespace StateByState
         Base,
         State1To2,
         State2To3,
-        State3To1
+        State3To1,
+        StateXToZ,
+        StateYToZ,
+        StateZToY,
+        StateYToX
     }
 
 
@@ -36,9 +40,11 @@ namespace StateByState
     {
         public event EventHandler SecondCompleted;
 
+
         public string Name { get; } = "Bob";
 
         public IStateManager<SecondStates, SecondStateTransitions> StateManager { get; }
+        public IStateManager<SecondStates2, SecondStateTransitions> StateManager2 { get; }
 
         public SecondViewModel()
         {
@@ -93,12 +99,75 @@ namespace StateByState
                     }
                 }
             };
+
+
+            StateManager2 = new BaseStateManager<SecondStates2, SecondStateTransitions>
+            {
+                States = new Dictionary<SecondStates2, IStateDefinition<SecondStates2>>
+                {
+                    {
+                        SecondStates2.StateX, new BaseStateDefinition<SecondStates2>
+                        {
+                            State = SecondStates2.StateX
+                        }
+                    },
+                    {
+                        SecondStates2.StateY, new BaseStateDefinition<SecondStates2>
+                        {
+                            State = SecondStates2.StateY
+                        }
+                    },
+                    {
+                        SecondStates2.StateZ, new BaseStateDefinition<SecondStates2>
+                        {
+                            State = SecondStates2.StateZ
+                        }
+                    }
+                },
+                Transitions = new Dictionary<SecondStateTransitions, ITransitionDefinition<SecondStates2>>
+                {
+                    {
+                        SecondStateTransitions.StateXToZ,
+                        new BaseTransitionDefinition<SecondStates2>
+                        {
+                            StartState = SecondStates2.StateX,
+                            EndState = SecondStates2.StateZ,
+                        }
+                    },
+                    {
+                        SecondStateTransitions.StateYToZ,
+                        new BaseTransitionDefinition<SecondStates2>
+                        {
+                            StartState = SecondStates2.StateY,
+                            EndState = SecondStates2.StateZ,
+                        }
+                    },
+                    {
+                        SecondStateTransitions.StateZToY,
+                        new BaseTransitionDefinition<SecondStates2>
+                        {
+                            StartState = SecondStates2.StateZ,
+                            EndState = SecondStates2.StateY,
+                        }
+                    },
+                     {
+                        SecondStateTransitions.StateYToX,
+                        new BaseTransitionDefinition<SecondStates2>
+                        {
+                            StartState = SecondStates2.StateY,
+                            EndState = SecondStates2.StateX,
+                        }
+                    }
+
+                }
+            };
         }
 
         public async Task InitSecond()
         {
            await  StateManager.ChangeTo(SecondStates.State1);
-            await Task.Delay(1000);
+            await StateManager2.ChangeTo(SecondStates2.StateX);
+            await TaskEx.Delay(1000);
             Debug.WriteLine("Break");
         }
 
@@ -126,6 +195,24 @@ namespace StateByState
             StateManager.Transition(SecondStateTransitions.State3To1);
             //SecondStateManager.ChangePageState(SecondStates.State3, false);
             //  SecondState2Manager.ChangePageState(SecondStates2.StateZ, false);
+        }
+
+
+        public void XtoZ()
+        {
+            StateManager2.Transition(SecondStateTransitions.StateXToZ);
+        }
+        public void YtoZ()
+        {
+            StateManager2.Transition(SecondStateTransitions.StateYToZ);
+        }
+        public void ZtoY()
+        {
+            StateManager2.Transition(SecondStateTransitions.StateZToY);
+        }
+        public void YtoX()
+        {
+            StateManager2.Transition(SecondStateTransitions.StateYToX);
         }
 
         public void Done()
