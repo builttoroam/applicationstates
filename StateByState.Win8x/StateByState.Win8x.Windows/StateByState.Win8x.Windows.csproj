@@ -129,8 +129,16 @@
       <HintPath>..\..\packages\Microsoft.Bcl.Async.1.0.168\lib\win8\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\portable-net45+wp80+win8+wpa81+dnxcore50\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\BuiltToRoam.General\BuiltToRoam.General.csproj">
+      <Project>{fd17ad8e-6a3f-4c1d-a7cb-dcbf6a125897}</Project>
+      <Name>BuiltToRoam.General</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\BuiltToRoam.Lifecycle.Win8x\BuiltToRoam.Lifecycle.Win8x.csproj">
       <Project>{b3b5beaf-e04d-4113-b8f0-659df433ecaa}</Project>
       <Name>BuiltToRoam.Lifecycle.Win8x</Name>

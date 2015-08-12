@@ -117,6 +117,10 @@
     <Content Include="Properties\BuiltToRoam.Lifecycle.UWP.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BuiltToRoam.General\BuiltToRoam.General.csproj">
+      <Project>{fd17ad8e-6a3f-4c1d-a7cb-dcbf6a125897}</Project>
+      <Name>BuiltToRoam.General</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BuiltToRoam.Lifecycle\BuiltToRoam.Lifecycle.csproj">
       <Project>{fa40c3d1-c786-4a96-89d3-78d3af17a437}</Project>
       <Name>BuiltToRoam.Lifecycle</Name>
