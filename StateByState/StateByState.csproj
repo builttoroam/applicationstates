@@ -96,28 +96,8 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="CustomSplitView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SecondPage.xaml.cs">
-      <DependentUpon>SecondPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ThirdFourPage.xaml.cs">
-      <DependentUpon>ThirdFourPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ThirdPage.xaml.cs">
-      <DependentUpon>ThirdPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ThirdThreePage.xaml.cs">
-      <DependentUpon>ThirdThreePage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ThirdTwoPage.xaml.cs">
-      <DependentUpon>ThirdTwoPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ThrirdOnePage.xaml.cs">
-      <DependentUpon>ThrirdOnePage.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -140,34 +120,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="SecondPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThirdFourPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThirdPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThirdThreePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThirdTwoPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ThrirdOnePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BuiltToRoam.Lifecycle.UWP\BuiltToRoam.Lifecycle.UWP.csproj">
@@ -183,6 +135,7 @@
       <Name>StateByState.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="..\StateByState.Shared\StateByState.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

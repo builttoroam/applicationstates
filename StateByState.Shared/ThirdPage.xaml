@@ -9,16 +9,19 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <SplitView DisplayMode="Inline" IsPaneOpen="True" OpenPaneLength="400" Background="Green">
-            <SplitView.Pane>
+        <local:CustomSplitView DisplayMode="Inline" IsPaneOpen="True" OpenPaneLength="400" Background="Green" x:Name="Split">
+            <local:CustomSplitView.Pane>
                 <StackPanel>
                     <Button Click="LoadOneClick">Option One</Button>
                     <Button Click="LoadTwoClick">Option Two</Button>
                     <Button Click="LoadThreeClick">Option Three</Button>
                     <Button Click="LoadFourClick">Option Four</Button>
                 </StackPanel>
-            </SplitView.Pane>
-            <Frame x:Name="InnerFrame" />
-        </SplitView>
+            </local:CustomSplitView.Pane>
+            <local:CustomSplitView.Content>
+                <Frame x:Name="InnerFrame" />
+            </local:CustomSplitView.Content>
+            
+        </local:CustomSplitView>
     </Grid>
 </lifecycle:BasePage>

@@ -198,21 +198,21 @@ namespace StateByState
         }
 
 
-        public void XtoZ()
+        public async Task XtoZ()
         {
-            StateManager2.Transition(SecondStateTransitions.StateXToZ);
+           await StateManager2.Transition(SecondStateTransitions.StateXToZ);
         }
-        public void YtoZ()
+        public async Task YtoZ()
         {
-            StateManager2.Transition(SecondStateTransitions.StateYToZ);
+            await StateManager2.Transition(SecondStateTransitions.StateYToZ);
         }
-        public void ZtoY()
+        public async Task ZtoY()
         {
-            StateManager2.Transition(SecondStateTransitions.StateZToY);
+            await StateManager2.Transition(SecondStateTransitions.StateZToY);
         }
-        public void YtoX()
+        public async Task YtoX()
         {
-            StateManager2.Transition(SecondStateTransitions.StateYToX);
+            await StateManager2.Transition(SecondStateTransitions.StateYToX);
         }
 
         public void Done()

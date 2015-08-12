@@ -73,7 +73,6 @@ namespace StateByState
                         {
                             State = PageStates.Third,
                             ChangedToViewModel = async vm => {
-                                        await vm.Start();
                                         vm.ThirdCompleted += ThirdCompleted;
                                     },
 #pragma warning disable 1998 // Needs to return Task

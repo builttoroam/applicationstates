@@ -36,5 +36,25 @@ namespace StateByState
         {
             (DataContext as SecondViewModel).Done();
         }
+
+        private async void XtoZ(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await CurrentViewModel.XtoZ();
+        }
+
+        private async void YtoZ(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await CurrentViewModel.XtoZ();
+        }
+
+        private async void ZtoY(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await CurrentViewModel.XtoZ();
+        }
+
+        private async void YtoX(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await CurrentViewModel.XtoZ();
+        }
     }
 }

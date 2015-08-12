@@ -29,15 +29,18 @@ namespace StateByState
 
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            var fn = new FrameNavigation<ThirdStates, ThirdTransitions>(this.InnerFrame, CurrentViewModel);
+            var frame = Split.FindName("InnerFrame") as Frame;
+
+            var fn = new FrameNavigation<ThirdStates, ThirdTransitions>(frame, CurrentViewModel);
             fn.Register<ThrirdOnePage>(ThirdStates.One);
             fn.Register<ThirdTwoPage>(ThirdStates.Two);
             fn.Register<ThirdThreePage>(ThirdStates.Three);
             fn.Register<ThirdFourPage>(ThirdStates.Four);
+            await CurrentViewModel.Start();
         }
 
         public ThirdViewModel CurrentViewModel=>DataContext as ThirdViewModel;

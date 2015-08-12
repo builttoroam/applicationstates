@@ -5,7 +5,6 @@
     xmlns:local="using:StateByState"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:uwp="using:BuiltToRoam.Lifecycle.UWP"
     xmlns:lifecycle="using:BuiltToRoam.Lifecycle"
     mc:Ignorable="d">
 
@@ -82,10 +81,10 @@
         <Button Click="ToSecondClick">To Second</Button>
         <Button Click="ToThirdClick">To Third</Button>
         <Button Click="DoneClick">Done</Button>
-        <Button Click="{x:Bind CurrentViewModel.XtoZ}">X To Z</Button>
-        <Button Click="{x:Bind CurrentViewModel.YtoZ}">Y To Z</Button>
-        <Button Click="{x:Bind CurrentViewModel.ZtoY}">Z To Y</Button>
-        <Button Click="{x:Bind CurrentViewModel.YtoX}">Y To X</Button>
+        <Button Click="XtoZ">X To Z</Button>
+        <Button Click="YtoZ">Y To Z</Button>
+        <Button Click="ZtoY">Z To Y</Button>
+        <Button Click="YtoX">Y To X</Button>
     </StackPanel>
 
 </lifecycle:BasePage>
