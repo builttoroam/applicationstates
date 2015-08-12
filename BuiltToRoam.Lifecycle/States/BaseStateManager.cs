@@ -24,8 +24,22 @@ namespace BuiltToRoam.Lifecycle.States
             var current = CurrentState;
             if (current.Equals(newState)) return true;
 
+
+            if (!current.Equals(default(TState)))
+            {
+                var currentStateDef = States[current];
+                var cancel = new CancelEventArgs();
+                if (currentStateDef.AboutToChangeFrom != null)
+                {
+                    await currentStateDef.AboutToChangeFrom(cancel);
+                }
+                if (cancel.Cancel) return false;
+            }
+
+
             try
             {
+
                 var proceed = await ChangeToState(current, newState);
                 if (!proceed) return false;
             }
@@ -35,6 +49,12 @@ namespace BuiltToRoam.Lifecycle.States
                 return false;
             }
             CurrentState = newState;
+
+            var newStateDef = States[newState];
+            if (newStateDef.ChangedTo != null)
+            {
+                await newStateDef.ChangedTo();
+            }
 
             try
             {
@@ -53,6 +73,16 @@ namespace BuiltToRoam.Lifecycle.States
         protected virtual async Task<bool> ChangeToState(TState oldState, TState newState)
 #pragma warning restore 1998
         {
+            if (!oldState.Equals(default(TState)))
+            {
+                var currentStateDef = States[oldState];
+                if (currentStateDef.ChangingFrom != null)
+                {
+                    await currentStateDef.ChangingFrom();
+                }
+            }
+
+
             return true;
         }
 

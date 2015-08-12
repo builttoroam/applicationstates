@@ -27,6 +27,33 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
 
         protected override async Task<bool> ChangeToState(TState oldState, TState newState)
         {
+            var aboutVM = CurrentViewModel as IAboutToLeaveViewModelState;
+            var cancel = new CancelEventArgs();
+            if (aboutVM != null)
+            {
+                
+                await aboutVM.AboutToLeave(cancel);
+                if (cancel.Cancel) return false;
+            }
+
+            var currentVMStates = !oldState.Equals(default(TState)) ? States[oldState] as IGenerateViewModel : null;
+            if (currentVMStates != null)
+            {
+                await currentVMStates.InvokeAboutToChangeFromViewModel(CurrentViewModel, cancel);
+                if (cancel.Cancel) return false;
+            }
+
+            var leaving = CurrentViewModel as ILeavingViewModelState;
+            if (leaving != null)
+            {
+                await  leaving.Leaving();
+            }
+
+            if (currentVMStates != null)
+            {
+                await currentVMStates.InvokeChangingFromViewModel(CurrentViewModel);
+            }
+
             var ok = await base.ChangeToState(oldState, newState);
             if (!ok) return false;
             INotifyPropertyChanged vm = null;
@@ -46,8 +73,21 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             }
             if (vm == null) return false;
 
-            CurrentViewModel = vm;
             ViewModels[vm.GetType()] = vm;
+            CurrentViewModel = vm;
+
+            var arrived = vm as IArrivingViewModelState;
+            if (arrived != null)
+            {
+                await arrived.Arriving();
+            }
+
+
+            currentVMStates = States[newState] as IGenerateViewModel;
+            if (currentVMStates != null)
+            {
+                await currentVMStates.InvokeChangedToViewModel(CurrentViewModel);
+            }
 
             return true;
         }

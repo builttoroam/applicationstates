@@ -22,5 +22,50 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         }
 
         public Func<TViewModel, Task> InitialiseViewModel { get; set; }
+
+        public Func<TViewModel, CancelEventArgs, Task> AboutToChangeFromViewModel { get; set; }
+
+        public async Task InvokeAboutToChangeFromViewModel(INotifyPropertyChanged viewModel, CancelEventArgs cancel)
+        {
+            if (AboutToChangeFromViewModel == null) return;
+            await AboutToChangeFromViewModel((TViewModel)viewModel, cancel);
+        }
+
+        public Func<TViewModel, Task> ChangingFromViewModel { get; set; }
+
+        public async Task InvokeChangingFromViewModel(INotifyPropertyChanged viewModel)
+        {
+            if (ChangingFromViewModel == null) return;
+            await ChangingFromViewModel((TViewModel)viewModel);
+        }
+
+
+        public Func<TViewModel, Task> ChangedToViewModel { get; set; }
+
+        public async Task InvokeChangedToViewModel(INotifyPropertyChanged viewModel)
+        {
+            if (ChangedToViewModel == null) return;
+            await ChangedToViewModel((TViewModel)viewModel);
+        }
+
+
     }
+
+    public interface ILeavingViewModelState
+    {
+        Task Leaving();
+    }
+
+    public interface IArrivingViewModelState
+    {
+        Task Arriving();
+    }
+
+    public interface IAboutToLeaveViewModelState
+    {
+        Task AboutToLeave(CancelEventArgs cancel);
+    }
+
+
+
 }

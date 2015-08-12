@@ -23,7 +23,7 @@ namespace StateByState
         ThirdToMain
     }
 
-    public class CoreApplication : NotifyBase, IHasStateManager<PageStates,PageTransitions>
+    public class CoreApplication : NotifyBase, IHasStateManager<PageStates, PageTransitions>
     {
         public IStateManager<PageStates, PageTransitions> StateManager { get; }
 
@@ -38,20 +38,48 @@ namespace StateByState
                         PageStates.Main, new ViewModelStateDefinition<PageStates, MainViewModel>
                         {
                             State = PageStates.Main,
-                            InitialiseViewModel = async vm => await vm.Init()
+                            InitialiseViewModel = async vm => await vm.Init(),
+#pragma warning disable 1998 // Needs to return Task
+                            ChangingFromViewModel = async
+#pragma warning restore 1998
+                            vm =>{
+                                vm.Completed -= State_Completed;
+                                vm.UnableToComplete -= State_UnableToCompleted;
+                            },
+#pragma warning disable 1998 // Needs to return Task
+                            ChangedToViewModel = async
+#pragma warning restore 1998
+                            vm =>{
+                                vm.Completed += State_Completed;
+                                vm.UnableToComplete += State_UnableToCompleted;
+                            },
                         }
                     },
                     {
                         PageStates.Second, new ViewModelStateDefinition<PageStates, SecondViewModel>
                         {
                             State = PageStates.Second,
-                            InitialiseViewModel = async vm => await vm.InitSecond()
+                            InitialiseViewModel = async vm => await vm.InitSecond(),
+#pragma warning disable 1998 // Needs to return Task
+                            ChangedToViewModel = async vm => vm.SecondCompleted += SecondCompleted,
+#pragma warning restore 1998
+#pragma warning disable 1998 // Needs to return Task
+                            ChangingFromViewModel = async vm => vm.SecondCompleted -= SecondCompleted,
+#pragma warning restore 1998
                         }
                     },
                     {
                         PageStates.Third, new ViewModelStateDefinition<PageStates, ThirdViewModel>
                         {
-                            State = PageStates.Third
+                            State = PageStates.Third,
+                            ChangedToViewModel = async vm => {
+                                        await vm.Start();
+                                        vm.ThirdCompleted += ThirdCompleted;
+                                    },
+#pragma warning disable 1998 // Needs to return Task
+                            ChangingFromViewModel = async vm => vm.ThirdCompleted -= ThirdCompleted,
+#pragma warning restore 1998
+
                         }
                     }
                 },
@@ -62,18 +90,7 @@ namespace StateByState
                         new ViewModelTransitionDefinition<PageStates>
                         {
                             StartState = PageStates.Main,
-#pragma warning disable 1998 // Needs to return Task
-                            LeavingStateViewModel = async (state, vm, cancel) =>
-                            {
-                                (vm as MainViewModel).Completed -= State_Completed;
-                                (vm as MainViewModel).UnableToComplete -= State_UnableToCompleted;
-
-                            },
-#pragma warning restore 1998
                             EndState = PageStates.Second,
-#pragma warning disable 1998 // Needs to return Task
-                            ArrivedStateViewModel = async (state, vm) => (vm as SecondViewModel).SecondCompleted += SecondCompleted,
-#pragma warning restore 1998
                         }
                     },
                     {
@@ -81,18 +98,7 @@ namespace StateByState
                         new ViewModelTransitionDefinition<PageStates>
                         {
                             StartState = PageStates.Second,
-#pragma warning disable 1998 // Needs to return Task
-                            LeavingStateViewModel = async (state, vm, cancel) => (vm as SecondViewModel).SecondCompleted -= SecondCompleted,
-#pragma warning restore 1998
                             EndState = PageStates.Main,
-#pragma warning disable 1998 // Needs to return Task
-                            ArrivedStateViewModel= async (state, vm) =>
-                            {
-                                (vm as MainViewModel).Completed += State_Completed;
-
-                                (vm as MainViewModel).UnableToComplete += State_UnableToCompleted;
-                            },
-#pragma warning restore 1998
                         }
                     },
                     {
@@ -100,21 +106,7 @@ namespace StateByState
                         new ViewModelTransitionDefinition<PageStates>
                         {
                             StartState = PageStates.Main,
-#pragma warning disable 1998 // Needs to return Task
-                            LeavingStateViewModel = async (state, vm, cancel) =>{
-                                (vm as MainViewModel).Completed -= State_Completed;
-                                (vm as MainViewModel).UnableToComplete -= State_UnableToCompleted;
-
-                            },
-#pragma warning restore 1998
                             EndState = PageStates.Third,
-#pragma warning disable 1998 // Needs to return Task
-                            ArrivedStateViewModel = async (state, vm) =>
-                            {
-                                await (vm as ThirdViewModel).Start();
-                                (vm as ThirdViewModel).ThirdCompleted += ThirdCompleted;
-                            },
-#pragma warning restore 1998
                         }
                     },
                     {
@@ -122,18 +114,7 @@ namespace StateByState
                         new ViewModelTransitionDefinition<PageStates>
                         {
                             StartState = PageStates.Third,
-#pragma warning disable 1998 // Needs to return Task
-                            LeavingStateViewModel = async (state, vm, cancel) => (vm as ThirdViewModel).ThirdCompleted -= SecondCompleted,
-#pragma warning restore 1998
                             EndState = PageStates.Main,
-#pragma warning disable 1998 // Needs to return Task
-                             ArrivedStateViewModel= async (state, vm) =>
-                            {
-                                (vm as MainViewModel).Completed += State_Completed;
-
-                                (vm as MainViewModel).UnableToComplete += State_UnableToCompleted;
-                            },
-#pragma warning restore 1998
                         }
                     }
                 }
@@ -143,16 +124,16 @@ namespace StateByState
         public async void Start()
         {
             await StateManager.ChangeTo(PageStates.Main, false);
-            var state = (StateManager as ViewModelStateManager<PageStates, PageTransitions>).CurrentViewModel as MainViewModel;
-            state.Completed += State_Completed;
-            state.UnableToComplete += State_UnableToCompleted;
+            //var state = (StateManager as ViewModelStateManager<PageStates, PageTransitions>).CurrentViewModel as MainViewModel;
+            //state.Completed += State_Completed;
+            //state.UnableToComplete += State_UnableToCompleted;
         }
 
         private async void State_Completed(object sender, EventArgs e)
         {
             await StateManager.Transition(PageTransitions.MainToSecond);
         }
-         private async void State_UnableToCompleted(object sender, EventArgs e)
+        private async void State_UnableToCompleted(object sender, EventArgs e)
         {
             await StateManager.Transition(PageTransitions.MainToThird);
         }

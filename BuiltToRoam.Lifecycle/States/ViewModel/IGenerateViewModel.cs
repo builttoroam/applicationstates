@@ -8,5 +8,12 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
     {
         Type ViewModelType { get; }
         Task<INotifyPropertyChanged> Generate();
+
+        Task InvokeAboutToChangeFromViewModel(INotifyPropertyChanged viewModel, CancelEventArgs cancel);
+
+        Task InvokeChangingFromViewModel(INotifyPropertyChanged viewModel);
+
+        Task InvokeChangedToViewModel(INotifyPropertyChanged viewModel);
+
     }
 }
