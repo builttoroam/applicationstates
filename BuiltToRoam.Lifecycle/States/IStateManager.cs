@@ -17,6 +17,11 @@ namespace BuiltToRoam.Lifecycle.States
 
         IDictionary<TTransition, ITransitionDefinition<TState>> Transitions { get; }
 
+        IStateDefinition<TState> DefineState(TState state);
+
+
+        IStateDefinition<TState> DefineState(IStateDefinition<TState> stateDefinition);
+
         Task<bool> ChangeTo(TState newState, bool useTransition = true);
 
         Task<bool> Transition(TTransition transition, bool useTransition = true);

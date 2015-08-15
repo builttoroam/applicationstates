@@ -44,6 +44,8 @@
     <Compile Include="States\BaseStateDefinition.cs" />
     <Compile Include="States\BaseStateManager.cs" />
     <Compile Include="States\BaseTransitionDefinition.cs" />
+    <Compile Include="States\ViewModel\IAboutToLeaveViewModelState.cs" />
+    <Compile Include="States\ViewModel\IArrivingViewModelState.cs" />
     <Compile Include="States\ViewModel\IGenerateViewModel.cs" />
     <Compile Include="States\IHasStateManager.cs" />
     <Compile Include="States\IStateDefinition.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="States\StateEventArgs.cs" />
     <Compile Include="States\ViewModel\IHasCurrentViewModel.cs" />
+    <Compile Include="States\ViewModel\ILeavingViewModelState.cs" />
     <Compile Include="States\ViewModel\ViewModelStateDefinition.cs" />
     <Compile Include="States\ViewModel\ViewModelStateManager.cs" />
     <Compile Include="States\ViewModel\ViewModelTransitionDefinition.cs" />

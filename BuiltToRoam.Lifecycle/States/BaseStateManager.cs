@@ -15,9 +15,21 @@ namespace BuiltToRoam.Lifecycle.States
 
         public TState CurrentState { get; private set; }
 
-        public IDictionary<TState, IStateDefinition<TState>> States { get; set; }
+        public IDictionary<TState, IStateDefinition<TState>> States { get; set; } = new Dictionary<TState, IStateDefinition<TState>>();
 
-        public IDictionary<TTransition, ITransitionDefinition<TState>> Transitions { get; set; }
+        public IDictionary<TTransition, ITransitionDefinition<TState>> Transitions { get; set; } = new Dictionary<TTransition, ITransitionDefinition<TState>>();
+
+        public virtual IStateDefinition<TState> DefineState(TState state)
+        {
+            var stateDefinition = new BaseStateDefinition<TState> {State = state};
+            return DefineState(stateDefinition);
+        }
+
+        public virtual IStateDefinition<TState> DefineState(IStateDefinition<TState> stateDefinition)
+        {
+            States[stateDefinition.State] = stateDefinition;
+            return stateDefinition;
+        }
 
         public async Task<bool> ChangeTo(TState newState, bool useTransitions = true)
         {

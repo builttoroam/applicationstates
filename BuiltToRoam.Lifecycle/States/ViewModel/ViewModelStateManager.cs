@@ -6,10 +6,50 @@ using BuiltToRoam.Lifecycle.States.ViewModel;
 
 namespace BuiltToRoam.Lifecycle.States.ViewModel
 {
-    public class ViewModelStateManager<TState, TTransition> : BaseStateManager<TState, TTransition>, IHasCurrentViewModel
+    public interface IViewModelStateManager<TState, TTransition> : 
+        IStateManager<TState, TTransition>,
+        IHasCurrentViewModel
         where TState : struct
-        where TTransition:struct
+        where TTransition : struct
     {
+        IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(TState state)
+            where TViewModel : INotifyPropertyChanged, new();
+
+        IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(
+            IViewModelStateDefinition<TState, TViewModel> stateDefinition)
+            where TViewModel : INotifyPropertyChanged, new();
+
+    }
+
+    public class ViewModelStateManager<TState, TTransition> : BaseStateManager<TState, TTransition>, IViewModelStateManager<TState,TTransition>
+        where TState : struct
+        where TTransition : struct
+    {
+        private const string ErrorDontUseDefineState =
+            "Use DefineViewModelState instead of DefineState for ViewModelStateManager";
+        public override IStateDefinition<TState> DefineState(TState state)
+        {
+            throw new Exception(ErrorDontUseDefineState);
+        }
+
+        public override IStateDefinition<TState> DefineState(IStateDefinition<TState> stateDefinition)
+        {
+            if (stateDefinition.GetType().GetGenericTypeDefinition() != typeof(ViewModelStateDefinition<,>)) throw new Exception(ErrorDontUseDefineState);
+            return base.DefineState(stateDefinition);
+        }
+
+        public IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(TState state) where TViewModel : INotifyPropertyChanged, new()
+        {
+            var stateDefinition = new ViewModelStateDefinition<TState, TViewModel> { State = state };
+            return DefineViewModelState(stateDefinition);
+        }
+
+        public IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(IViewModelStateDefinition<TState, TViewModel> stateDefinition) where TViewModel : INotifyPropertyChanged, new()
+        {
+            base.DefineState(stateDefinition);
+            return stateDefinition;
+        }
+
         private IDictionary<Type, INotifyPropertyChanged> ViewModels { get; } =
             new Dictionary<Type, INotifyPropertyChanged>();
 
@@ -31,7 +71,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             var cancel = new CancelEventArgs();
             if (aboutVM != null)
             {
-                
+
                 await aboutVM.AboutToLeave(cancel);
                 if (cancel.Cancel) return false;
             }
@@ -46,7 +86,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             var leaving = CurrentViewModel as ILeavingViewModelState;
             if (leaving != null)
             {
-                await  leaving.Leaving();
+                await leaving.Leaving();
             }
 
             if (currentVMStates != null)
@@ -97,7 +137,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             await base.ArrivedState(transition, currentState);
 
             var trans = transition as ViewModelTransitionDefinition<TState>;
-            if (trans != null && trans.ArrivedStateViewModel!=null)
+            if (trans != null && trans.ArrivedStateViewModel != null)
             {
                 await trans.ArrivedStateViewModel(currentState, CurrentViewModel);
             }
@@ -110,7 +150,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             if (cancel.Cancel) return;
 
             var trans = transition as ViewModelTransitionDefinition<TState>;
-            if (trans != null && trans.LeavingStateViewModel!=null)
+            if (trans != null && trans.LeavingStateViewModel != null)
             {
                 await trans.LeavingStateViewModel(currentState, CurrentViewModel, cancel);
             }
