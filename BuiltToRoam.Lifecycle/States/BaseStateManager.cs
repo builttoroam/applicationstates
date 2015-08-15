@@ -9,7 +9,7 @@ namespace BuiltToRoam.Lifecycle.States
     public class BaseStateManager<TState, TTransition> :
         NotifyBase, IStateManager<TState, TTransition>
         where TState : struct
-        where TTransition:struct
+        where TTransition : struct
     {
         public event EventHandler<StateEventArgs<TState>> StateChanged;
 
@@ -21,7 +21,7 @@ namespace BuiltToRoam.Lifecycle.States
 
         public virtual IStateDefinition<TState> DefineState(TState state)
         {
-            var stateDefinition = new BaseStateDefinition<TState> {State = state};
+            var stateDefinition = new BaseStateDefinition<TState> { State = state };
             return DefineState(stateDefinition);
         }
 
@@ -29,6 +29,13 @@ namespace BuiltToRoam.Lifecycle.States
         {
             States[stateDefinition.State] = stateDefinition;
             return stateDefinition;
+        }
+
+        public virtual ITransitionDefinition<TState> DefineTransition(TTransition transition)
+        {
+            var transitionDefinition = new BaseTransitionDefinition<TState>();
+            Transitions[transition] = transitionDefinition;
+            return transitionDefinition;
         }
 
         public async Task<bool> ChangeTo(TState newState, bool useTransitions = true)
@@ -98,16 +105,34 @@ namespace BuiltToRoam.Lifecycle.States
             return true;
         }
 
+        protected virtual ITransitionDefinition<TState> CreateDefaultTransition()
+        {
+            return new BaseTransitionDefinition<TState>();
+        }
+
+        public async Task<bool> Transition(TState newState, bool useTransition = true)
+        {
+            var transition = CreateDefaultTransition();
+            transition.EndState = newState;
+            return await InternalTransition(transition, useTransition);
+        }
+
         public async Task<bool> Transition(TTransition transitionDef, bool useTransition = true)
         {
             var transition = Transitions[transitionDef];
-            if (!transition.StartState.Equals(CurrentState)) return false;
+            return await InternalTransition(transition, useTransition);
+        }
+
+        private async Task<bool> InternalTransition(ITransitionDefinition<TState> transition, bool useTransition)
+        {
+
+            if (!transition.StartState.Equals(CurrentState) && !transition.StartState.Equals(default(TState))) return false;
             var cancel = new CancelEventArgs();
-            await LeavingState(transition,CurrentState, cancel);
-            
+            await LeavingState(transition, CurrentState, cancel);
+
             if (cancel.Cancel) return false;
             await ArrivingState(transition);
-           
+
             if (!await ChangeTo(transition.EndState)) return false;
             await ArrivedState(transition, CurrentState);
             return true;

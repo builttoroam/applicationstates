@@ -50,6 +50,18 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             return stateDefinition;
         }
 
+        public override ITransitionDefinition<TState> DefineTransition(TTransition transition)
+        {
+            var transitionDefinition = new ViewModelTransitionDefinition<TState>();
+            Transitions[transition] = transitionDefinition;
+            return transitionDefinition;
+        }
+
+        protected override ITransitionDefinition<TState> CreateDefaultTransition()
+        {
+            return new ViewModelTransitionDefinition<TState>();
+        }
+
         private IDictionary<Type, INotifyPropertyChanged> ViewModels { get; } =
             new Dictionary<Type, INotifyPropertyChanged>();
 

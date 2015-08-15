@@ -66,6 +66,21 @@ Func<Task> action) where TState : struct
             return stateDefinition;
         }
 
+
+        public static ITransitionDefinition<TState> From<TState>(this ITransitionDefinition<TState> transition,
+            TState state) where TState : struct
+        {
+            transition.StartState = state;
+            return transition;
+        }
+
+        public static ITransitionDefinition<TState> To<TState>(this ITransitionDefinition<TState> transition,
+            TState state) where TState : struct
+        {
+            transition.EndState= state;
+            return transition;
+        }
+
         //public static IStateDefinition<TState> WithBehavior<TState>(
         //    this IStateDefinition<TState> stateDefinition,
         //    StateCancellableAction actionType,

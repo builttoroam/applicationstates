@@ -20,8 +20,7 @@ namespace StateByState
     {
         Base,
         MainToSecond,
-        SecondToMain,
-        MainToThird,
+        AnyToMain,
         ThirdToMain
     }
 
@@ -81,92 +80,18 @@ namespace StateByState
 
             StateManager = sm;
 
-            //            {
-            //                States = new Dictionary<PageStates, IStateDefinition<PageStates>>
-            //                {
-            //                    {
-            //                        PageStates.Main, new ViewModelStateDefinition<PageStates, MainViewModel>
-            //                        {
-            //                            State = PageStates.Main,
-            //                            InitialiseViewModel = async vm => await vm.Init(),
-            //#pragma warning disable 1998 // Needs to return Task
-            //                            ChangingFromViewModel = async
-            //#pragma warning restore 1998
-            //                            vm =>{
-            //                                vm.Completed -= State_Completed;
-            //                                vm.UnableToComplete -= State_UnableToCompleted;
-            //                            },
-            //#pragma warning disable 1998 // Needs to return Task
-            //                            ChangedToViewModel = async
-            //#pragma warning restore 1998
-            //                            vm =>{
-            //                                vm.Completed += State_Completed;
-            //                                vm.UnableToComplete += State_UnableToCompleted;
-            //                            },
-            //                        }
-            //                    },
-            //                    {
-            //                        PageStates.Second, new ViewModelStateDefinition<PageStates, SecondViewModel>
-            //                        {
-            //                            State = PageStates.Second,
-            //                            InitialiseViewModel = async vm => await vm.InitSecond(),
-            //#pragma warning disable 1998 // Needs to return Task
-            //                            ChangedToViewModel = async vm => vm.SecondCompleted += SecondCompleted,
-            //#pragma warning restore 1998
-            //#pragma warning disable 1998 // Needs to return Task
-            //                            ChangingFromViewModel = async vm => vm.SecondCompleted -= SecondCompleted,
-            //#pragma warning restore 1998
-            //                        }
-            //                    },
-            //                    {
-            //                        PageStates.Third, new ViewModelStateDefinition<PageStates, ThirdViewModel>
-            //                        {
-            //                            State = PageStates.Third,
-            //                            ChangedToViewModel = async vm => {
-            //                                        vm.ThirdCompleted += ThirdCompleted;
-            //                                    },
-            //#pragma warning disable 1998 // Needs to return Task
-            //                            ChangingFromViewModel = async vm => vm.ThirdCompleted -= ThirdCompleted,
-            //#pragma warning restore 1998
 
-            //                        }
-            //                    }
-            //                },
-            sm.Transitions = new Dictionary<PageTransitions, ITransitionDefinition<PageStates>>
-                            {
-                                {
-                                    PageTransitions.MainToSecond,
-                                    new ViewModelTransitionDefinition<PageStates>
-                                    {
-                                        StartState = PageStates.Main,
-                                        EndState = PageStates.Second,
-                                    }
-                                },
-                                {
-                                    PageTransitions.SecondToMain,
-                                    new ViewModelTransitionDefinition<PageStates>
-                                    {
-                                        StartState = PageStates.Second,
-                                        EndState = PageStates.Main,
-                                    }
-                                },
-                                {
-                                    PageTransitions.MainToThird,
-                                    new ViewModelTransitionDefinition<PageStates>
-                                    {
-                                        StartState = PageStates.Main,
-                                        EndState = PageStates.Third,
-                                    }
-                                },
-                                {
-                                    PageTransitions.ThirdToMain,
-                                    new ViewModelTransitionDefinition<PageStates>
-                                    {
-                                        StartState = PageStates.Third,
-                                        EndState = PageStates.Main,
-                                    }
-                                }
-                            };
+            sm.DefineTransition(PageTransitions.MainToSecond)
+                .From(PageStates.Main)
+                .To(PageStates.Second);
+
+            sm.DefineTransition(PageTransitions.AnyToMain)
+                .To(PageStates.Main);
+
+            sm.DefineTransition(PageTransitions.ThirdToMain)
+                .From(PageStates.Third)
+                .To(PageStates.Main);
+
     }
 
     public async void Start()
@@ -183,12 +108,12 @@ namespace StateByState
         }
         private async void State_UnableToCompleted(object sender, EventArgs e)
         {
-            await StateManager.Transition(PageTransitions.MainToThird);
+            await StateManager.Transition(PageStates.Third);
         }
 
         private async void SecondCompleted(object sender, EventArgs e)
         {
-            await StateManager.Transition(PageTransitions.SecondToMain);
+            await StateManager.Transition(PageTransitions.AnyToMain);
         }
         private async void ThirdCompleted(object sender, EventArgs e)
         {

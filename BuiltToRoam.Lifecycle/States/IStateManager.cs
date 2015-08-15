@@ -24,6 +24,8 @@ namespace BuiltToRoam.Lifecycle.States
 
         Task<bool> ChangeTo(TState newState, bool useTransition = true);
 
+        Task<bool> Transition(TState newState, bool useTransition = true);
+
         Task<bool> Transition(TTransition transition, bool useTransition = true);
     }
 }

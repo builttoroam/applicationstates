@@ -55,6 +55,8 @@
     <Compile Include="States\StateEventArgs.cs" />
     <Compile Include="States\ViewModel\IHasCurrentViewModel.cs" />
     <Compile Include="States\ViewModel\ILeavingViewModelState.cs" />
+    <Compile Include="States\ViewModel\IViewModelStateDefinition.cs" />
+    <Compile Include="States\ViewModel\IViewModelTransitionDefinition.cs" />
     <Compile Include="States\ViewModel\ViewModelStateDefinition.cs" />
     <Compile Include="States\ViewModel\ViewModelStateManager.cs" />
     <Compile Include="States\ViewModel\ViewModelTransitionDefinition.cs" />

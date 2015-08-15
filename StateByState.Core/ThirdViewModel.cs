@@ -22,10 +22,10 @@ namespace StateByState
     public enum ThirdTransitions
     {
         Base,
-        OneToTwo,
-        TwoToThree,
-        ThreeToFour,
-        FourToOne
+        //OneToTwo,
+        //TwoToThree,
+        //ThreeToFour,
+        //FourToOne
     }
 
     public class ThirdViewModel:NotifyBase, IHasStateManager<ThirdStates,ThirdTransitions>
@@ -37,71 +37,76 @@ namespace StateByState
         public ThirdViewModel()
         {
 
-            StateManager = new ViewModelStateManager<ThirdStates, ThirdTransitions>
-            {
-                States = new Dictionary<ThirdStates, IStateDefinition<ThirdStates>>
-                {
-                    {
-                        ThirdStates.One, new ViewModelStateDefinition<ThirdStates, ThirdOneViewModel>
-                        {
-                            State = ThirdStates.One
-                        }
-                    },
-                    {
-                        ThirdStates.Two, new ViewModelStateDefinition<ThirdStates, ThirdTwoViewModel>
-                        {
-                            State = ThirdStates.Two
-                        }
-                    },
-                    {
-                        ThirdStates.Three, new ViewModelStateDefinition<ThirdStates, ThirdThreViewModel>
-                        {
-                            State = ThirdStates.Three
-                        }
-                    },
-                    {
-                        ThirdStates.Four, new ViewModelStateDefinition<ThirdStates, ThirdFourViewModel>
-                        {
-                            State = ThirdStates.Four
-                        }
-                    }
-                },
-                Transitions = new Dictionary<ThirdTransitions, ITransitionDefinition<ThirdStates>>
-                {
-                    {
-                        ThirdTransitions.OneToTwo,
-                        new ViewModelTransitionDefinition<ThirdStates>
-                        {
-                            StartState = ThirdStates.One,
-                            EndState = ThirdStates.Two,
-                        }
-                    },
-                     {
-                        ThirdTransitions.TwoToThree,
-                        new ViewModelTransitionDefinition<ThirdStates>
-                        {
-                            StartState = ThirdStates.Two,
-                            EndState = ThirdStates.Three,
-                        }
-                    },
-                      {
-                        ThirdTransitions.ThreeToFour,
-                        new ViewModelTransitionDefinition<ThirdStates>
-                        {
-                            StartState = ThirdStates.Three,
-                            EndState = ThirdStates.Four,
-                        }
-                    },
-                       {
-                        ThirdTransitions.FourToOne,
-                        new ViewModelTransitionDefinition<ThirdStates>
-                        {
-                            StartState = ThirdStates.Four,
-                            EndState = ThirdStates.One,
-                        }
-                    }
-                }
-            };
+            var sm = new ViewModelStateManager<ThirdStates, ThirdTransitions>();
+            sm.DefineViewModelState<ThirdOneViewModel>(ThirdStates.One);
+            sm.DefineViewModelState<ThirdTwoViewModel>(ThirdStates.Two);
+            sm.DefineViewModelState<ThirdThreViewModel>(ThirdStates.Three);
+            sm.DefineViewModelState<ThirdFourViewModel>(ThirdStates.Four);
+            StateManager = sm;
+            //{
+            //    States = new Dictionary<ThirdStates, IStateDefinition<ThirdStates>>
+            //    {
+            //        {
+            //            ThirdStates.One, new ViewModelStateDefinition<ThirdStates, ThirdOneViewModel>
+            //            {
+            //                State = ThirdStates.One
+            //            }
+            //        },
+            //        {
+            //            ThirdStates.Two, new ViewModelStateDefinition<ThirdStates, ThirdTwoViewModel>
+            //            {
+            //                State = ThirdStates.Two
+            //            }
+            //        },
+            //        {
+            //            ThirdStates.Three, new ViewModelStateDefinition<ThirdStates, ThirdThreViewModel>
+            //            {
+            //                State = ThirdStates.Three
+            //            }
+            //        },
+            //        {
+            //            ThirdStates.Four, new ViewModelStateDefinition<ThirdStates, ThirdFourViewModel>
+            //            {
+            //                State = ThirdStates.Four
+            //            }
+            //        }
+            //    },
+            //    Transitions = new Dictionary<ThirdTransitions, ITransitionDefinition<ThirdStates>>
+            //    {
+            //        {
+            //            ThirdTransitions.OneToTwo,
+            //            new ViewModelTransitionDefinition<ThirdStates>
+            //            {
+            //                StartState = ThirdStates.One,
+            //                EndState = ThirdStates.Two,
+            //            }
+            //        },
+            //         {
+            //            ThirdTransitions.TwoToThree,
+            //            new ViewModelTransitionDefinition<ThirdStates>
+            //            {
+            //                StartState = ThirdStates.Two,
+            //                EndState = ThirdStates.Three,
+            //            }
+            //        },
+            //          {
+            //            ThirdTransitions.ThreeToFour,
+            //            new ViewModelTransitionDefinition<ThirdStates>
+            //            {
+            //                StartState = ThirdStates.Three,
+            //                EndState = ThirdStates.Four,
+            //            }
+            //        },
+            //           {
+            //            ThirdTransitions.FourToOne,
+            //            new ViewModelTransitionDefinition<ThirdStates>
+            //            {
+            //                StartState = ThirdStates.Four,
+            //                EndState = ThirdStates.One,
+            //            }
+            //        }
+            //    }
+            //};
         }
 
         public async Task Start()
@@ -111,23 +116,23 @@ namespace StateByState
 
         public async Task One()
         {
-            await StateManager.Transition(ThirdTransitions.OneToTwo);
+            await StateManager.Transition(ThirdStates.Two);// ThirdTransitions.OneToTwo);
         }
 
         public async Task Two ()
         {
-            await StateManager.Transition(ThirdTransitions.TwoToThree);
+            await StateManager.Transition(ThirdStates.Three);// ThirdTransitions.TwoToThree);
 
         }
 
         public async Task Three()
         {
 
-            await StateManager.Transition(ThirdTransitions.ThreeToFour);
+            await StateManager.Transition(ThirdStates.Four);// ThirdTransitions.ThreeToFour);
         }
         public async Task Four()
         {
-            await StateManager.Transition(ThirdTransitions.FourToOne);
+            await StateManager.Transition(ThirdStates.One);// ThirdTransitions.FourToOne);
 
         }
     }
