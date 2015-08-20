@@ -11,6 +11,7 @@ namespace BuiltToRoam
         public static void Log<TEntity>(this TEntity entity, [CallerMemberName] string caller = null)
         {
             var json = JsonConvert.SerializeObject(entity);
+            // ReSharper disable once ExplicitCallerInfoArgument // Ignore that argument can be null
             Log(typeof (TEntity).Name + ": " + json, caller);
         }
 
@@ -85,7 +86,7 @@ namespace BuiltToRoam
             }
             catch (Exception ext)
             {
-                Debug.WriteLine(ext.Message);
+                Debug.WriteLine("Exception: " + ext.Message);
             }
         }
     }

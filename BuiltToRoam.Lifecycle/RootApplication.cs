@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extras.CommonServiceLocator;
@@ -31,16 +28,22 @@ namespace BuiltToRoam.Lifecycle
             await CompleteStartup();
         }
 
+#pragma warning disable 1998 // Async so it can be overridden
         protected virtual async Task CommenceStartup()
+#pragma warning restore 1998
         {
         }
 
+#pragma warning disable 1998 // Async so it can be overridden
         protected virtual async Task CompleteStartup()
+#pragma warning restore 1998
         {
         }
 
         protected IContainer DependencyContainer { get; private set; }
+#pragma warning disable 1998 // Async so it can be overridden
         protected virtual async Task BuildCoreDependencies(IContainer container)
+#pragma warning restore 1998
         {
             DependencyContainer = container;
         }

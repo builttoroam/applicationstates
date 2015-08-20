@@ -99,7 +99,7 @@ namespace StateByState
     public class ThirdFourViewModel : NotifyBase
     {
         public event EventHandler Done;
-        public string Title { get; set; }= "Four";
+        public string Title { get; set; }
 
         public ThirdFourViewModel(ISpecial special)
         {

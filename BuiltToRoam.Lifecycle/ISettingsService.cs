@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace BuiltToRoam
+namespace BuiltToRoam.Lifecycle
 {
     public interface ISettingsService
     {

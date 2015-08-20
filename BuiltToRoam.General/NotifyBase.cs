@@ -11,15 +11,13 @@ namespace BuiltToRoam
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-
+            var handler = PropertyChanged;
+            handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         protected virtual void OnPropertyChanged<TValue>(Expression<Func<TValue>> selector)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs((selector.Body as MemberExpression).Member.Name));
-
+            var handler = PropertyChanged;
+            handler?.Invoke(this, new PropertyChangedEventArgs((selector.Body as MemberExpression)?.Member.Name));
         }
     }
 }

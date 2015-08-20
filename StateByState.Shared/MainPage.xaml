@@ -11,7 +11,7 @@
 
     <StackPanel VerticalAlignment="Center" Background ="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 <TextBlock Text="{Binding Data}"></TextBlock>
-        <Button Click="TestClick">Test</Button>
-        <Button Click="ThreeClick">Page Thre</Button>
+        <Button Click="{x:Bind CurrentViewModel.Test}">Test</Button>
+        <Button Click="{x:Bind CurrentViewModel.Three}">Page Thre</Button>
     </StackPanel>
 </lifecycle:BasePage>

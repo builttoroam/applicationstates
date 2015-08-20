@@ -44,16 +44,16 @@
             <local:CustomSplitView.Pane>
                 <StackPanel>
                     <Button x:Name="button"
-                            Click="LoadOneClick"
+                            Click="{x:Bind CurrentViewModel.One}"
                             IsEnabled="False">Option One</Button>
                     <Button x:Name="button1"
-                            Click="LoadTwoClick"
+                            Click="{x:Bind CurrentViewModel.Two}"
                             IsEnabled="False">Option Two</Button>
                     <Button x:Name="button2"
-                            Click="LoadThreeClick"
+                            Click="{x:Bind CurrentViewModel.Three}"
                             IsEnabled="False">Option Three</Button>
                     <Button x:Name="button3"
-                            Click="LoadFourClick"
+                            Click="{x:Bind CurrentViewModel.Four}"
                             IsEnabled="False">Option Four</Button>
                 </StackPanel>
             </local:CustomSplitView.Pane>

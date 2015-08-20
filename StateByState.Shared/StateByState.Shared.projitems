@@ -45,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SecondPage.xaml.cs">
       <DependentUpon>SecondPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Special.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ThirdFourPage.xaml.cs">
       <DependentUpon>ThirdFourPage.xaml</DependentUpon>
     </Compile>

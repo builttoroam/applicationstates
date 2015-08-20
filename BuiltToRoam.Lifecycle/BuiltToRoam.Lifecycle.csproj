@@ -50,6 +50,7 @@
     <Compile Include="States\ViewModel\BaseViewModel.cs" />
     <Compile Include="States\ViewModel\IAboutToLeaveViewModelState.cs" />
     <Compile Include="States\ViewModel\IArrivingViewModelState.cs" />
+    <Compile Include="States\ViewModel\ICanRegisterDependencies.cs" />
     <Compile Include="States\ViewModel\IGenerateViewModel.cs" />
     <Compile Include="States\IHasStateManager.cs" />
     <Compile Include="States\IStateDefinition.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="States\ViewModel\IHasCurrentViewModel.cs" />
     <Compile Include="States\ViewModel\ILeavingViewModelState.cs" />
     <Compile Include="States\ViewModel\IViewModelStateDefinition.cs" />
+    <Compile Include="States\ViewModel\IViewModelStateManager.cs" />
     <Compile Include="States\ViewModel\IViewModelTransitionDefinition.cs" />
     <Compile Include="States\ViewModel\ViewModelStateDefinition.cs" />
     <Compile Include="States\ViewModel\ViewModelStateManager.cs" />

@@ -19,14 +19,16 @@ namespace BuiltToRoam.Lifecycle.States
     this IStateDefinition<TState> stateDefinition,
     Action<CancelEventArgs> action) where TState : struct
         {
+#pragma warning disable 1998  // Convert sync method into async call
             return stateDefinition.WhenAboutToChange(async cancel => action(cancel));
+#pragma warning restore 1998
         }
 
         public static IStateDefinition<TState> WhenAboutToChange<TState>(
     this IStateDefinition<TState> stateDefinition,
     Func<CancelEventArgs, Task> action) where TState : struct
         {
-            if (stateDefinition == null) return stateDefinition;
+            if (stateDefinition == null) return null;
 
                 stateDefinition.AboutToChangeFrom = action;
             return stateDefinition;
@@ -36,14 +38,16 @@ namespace BuiltToRoam.Lifecycle.States
 this IStateDefinition<TState> stateDefinition,
 Action action) where TState : struct
         {
+#pragma warning disable 1998  // Convert sync method into async call
             return stateDefinition.WhenChangingFrom(async () => action());
+#pragma warning restore 1998
         }
 
         public static IStateDefinition<TState> WhenChangingFrom<TState>(
 this IStateDefinition<TState> stateDefinition,
 Func<Task> action) where TState : struct
         {
-            if (stateDefinition == null) return stateDefinition;
+            if (stateDefinition == null) return null;
 
             stateDefinition.ChangingFrom = action;
             return stateDefinition;
@@ -53,14 +57,16 @@ Func<Task> action) where TState : struct
 this IStateDefinition<TState> stateDefinition,
 Action action) where TState : struct
         {
+#pragma warning disable 1998  // Convert sync method into async call
             return stateDefinition.WhenChangedTo(async () => action());
+#pragma warning restore 1998
         }
 
         public static IStateDefinition<TState> WhenChangedTo<TState>(
 this IStateDefinition<TState> stateDefinition,
 Func<Task> action) where TState : struct
         {
-            if (stateDefinition == null) return stateDefinition;
+            if (stateDefinition == null) return null;
 
             stateDefinition.ChangedTo= action;
             return stateDefinition;
@@ -81,40 +87,7 @@ Func<Task> action) where TState : struct
             return transition;
         }
 
-        //public static IStateDefinition<TState> WithBehavior<TState>(
-        //    this IStateDefinition<TState> stateDefinition,
-        //    StateCancellableAction actionType,
-        //    Func<CancelEventArgs, Task> action) where TState : struct
-        //{
-        //    if (stateDefinition == null) return stateDefinition;
-
-        //    if (actionType == StateCancellableAction.AboutToChange)
-        //    {
-        //        stateDefinition.AboutToChangeFrom = action;
-        //    }
-        //    return stateDefinition;
-        //}
-
-        //public static IStateDefinition<TState> WithBehavior<TState>(
-        //    this IStateDefinition<TState> stateDefinition,
-        //    StateAction actionType,
-        //    Func<Task> action) where TState:struct
-        //{
-        //    if (stateDefinition == null) return stateDefinition;
-        //    switch (actionType)
-        //    {
-        //        case StateAction.AboutToChange:
-        //            stateDefinition.AboutToChangeFrom = (cancel) => action();
-        //            break;
-        //        case StateAction.ChangingFrom:
-        //            stateDefinition.ChangingFrom = action;
-        //            break;
-        //            case StateAction.ChangedTo:
-        //            stateDefinition.ChangedTo = action;
-        //            break;
-        //    }
-        //    return stateDefinition;
-        //} 
+      
     }
 
 }

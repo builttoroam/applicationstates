@@ -11,41 +11,15 @@ namespace BuiltToRoam
 
         protected string Value([CallerMemberName] string propertyName = null)
         {
-            if (propertyName == null) return null;
-            return Data.SafeDictionaryValue<string, string, string>(propertyName);
+            return propertyName == null ? null : Data.SafeDictionaryValue<string, string, string>(propertyName);
         }
 
         protected BaseConfiguration(IDictionary<Expression<Func<string>>, string> initializers=null)
         {
-            if (initializers == null) return;
-            initializers.DoForEach(initializer =>
-                Data[(initializer.Key.Body as MemberExpression).Member.Name] = initializer.Value);
+            initializers?.DoForEach(initializer =>
+                Data[(initializer.Key.Body as MemberExpression)?.Member.Name] = initializer.Value);
 
         }
-
-
-    }
-
-    public class ConfigurationManager<TConfigurationKey, TConfiguration> : IConfigurationManager<TConfigurationKey,TConfiguration>
-        where TConfigurationKey : struct
-        where TConfiguration :BaseConfiguration
-    {
-        private IDictionary<TConfigurationKey, TConfiguration> Configurations { get; } = new Dictionary<TConfigurationKey, TConfiguration>();
-
-
-        public void Populate(IDictionary<TConfigurationKey, TConfiguration> configurations)
-        {
-            if (configurations == null) return;
-            configurations.DoForEach(d=>Configurations[d.Key]=d.Value);
-        }
-
-        public void SelectConfiguration(TConfigurationKey key)
-        {
-            Current = Configurations.SafeDictionaryValue<TConfigurationKey, TConfiguration, TConfiguration>(key);
-        }
-
-        public TConfiguration Current { get; private set; }
-
     }
 
     public interface IConfigurationManager<TConfigurationKey, TConfiguration>

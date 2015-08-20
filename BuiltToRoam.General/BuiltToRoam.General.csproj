@@ -43,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BaseConfiguration.cs" />
+    <Compile Include="ConfigurationManager.cs" />
     <Compile Include="DisplayNameAttribute.cs" />
     <Compile Include="ILogService.cs" />
     <None Include="app.config" />

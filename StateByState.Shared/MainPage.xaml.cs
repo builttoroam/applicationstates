@@ -14,16 +14,8 @@ namespace StateByState
         {
             InitializeComponent();
         }
+        public MainViewModel CurrentViewModel => DataContext as MainViewModel;
 
-        private void TestClick(object sender, RoutedEventArgs e)
-        {
-            (ViewModel as MainViewModel)?.Test();
-        }
-
-        private void ThreeClick(object sender, RoutedEventArgs e)
-        {
-            (ViewModel as MainViewModel)?.Three();
-        }
     }
     
 }

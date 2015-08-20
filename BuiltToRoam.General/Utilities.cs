@@ -161,15 +161,13 @@ namespace BuiltToRoam
             {
                 args = EventArgs.Empty;
             }
-            if (handler != null)
-                handler(sender, args);
+            handler?.Invoke(sender, args);
         }
 
         public static void SafeRaise<T>(this EventHandler<T> handler, object sender, T args)
             where T : EventArgs
         {
-            if (handler != null)
-                handler(sender, args);
+            handler?.Invoke(sender, args);
         }
 
 
@@ -195,25 +193,21 @@ namespace BuiltToRoam
 
         public static string SafeDecendentValue(this XElement element, string name)
         {
-            if (element == null) return string.Empty;
-            var dec = element.Descendants(name).FirstOrDefault();
-            if (dec == null) return string.Empty;
-            return dec.Value;
+            var dec = element?.Descendants(name).FirstOrDefault();
+            return dec?.Value ?? string.Empty;
         }
 
         public static string SafeDecendentValue(this XElement element, XName name)
         {
-            if (element == null) return string.Empty;
-            var dec = element.Descendants(name).FirstOrDefault();
-            if (dec == null) return string.Empty;
-            return dec.Value;
+            var dec = element?.Descendants(name).FirstOrDefault();
+            return dec?.Value ?? string.Empty;
         }
 
 
 
         public static string SafeElementValue(this XElement element, string name)
         {
-            if (element == null || element.Element(name) == null) return string.Empty;
+            if (element?.Element(name) == null) return string.Empty;
             // ReSharper disable PossibleNullReferenceException
             return element.Element(name).Value;
             // ReSharper restore PossibleNullReferenceException
@@ -221,7 +215,7 @@ namespace BuiltToRoam
 
         public static string SafeElementValue(this XElement element, XName name)
         {
-            if (element == null || element.Element(name) == null) return string.Empty;
+            if (element?.Element(name) == null) return string.Empty;
             // ReSharper disable PossibleNullReferenceException
             return element.Element(name).Value;
             // ReSharper restore PossibleNullReferenceException
@@ -229,7 +223,7 @@ namespace BuiltToRoam
 
         public static string SafeAttributeValue(this XElement element, XName name)
         {
-            if (element == null || element.Attribute(name) == null) return string.Empty;
+            if (element?.Attribute(name) == null) return string.Empty;
             // ReSharper disable PossibleNullReferenceException
             return element.Attribute(name).Value;
             // ReSharper restore PossibleNullReferenceException
@@ -237,7 +231,7 @@ namespace BuiltToRoam
 
         public static string SafeAttributeValue(this XElement element, string name)
         {
-            if (element == null || element.Attribute(name) == null) return string.Empty;
+            if (element?.Attribute(name) == null) return string.Empty;
             // ReSharper disable PossibleNullReferenceException
             return element.Attribute(name).Value;
             // ReSharper restore PossibleNullReferenceException
@@ -363,13 +357,7 @@ namespace BuiltToRoam
 
       
 
-        private static DateTime Epoch
-        {
-            get
-            {
-                return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            }
-        }
+        private static DateTime Epoch => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public static DateTime ConvertToDateTimeFromUnixTimestamp(this string unixTime)
         {

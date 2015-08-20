@@ -4,34 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
-using BuiltToRoam.Lifecycle.States.ViewModel;
 
 namespace BuiltToRoam.Lifecycle.States.ViewModel
 {
-    public interface ICanRegisterDependencies
-    {
-        void RegisterDependencies(IContainer container);
-    }
-
-
-    public interface IViewModelStateManager<TState, TTransition> :
-        ICanRegisterDependencies,
-        IStateManager<TState, TTransition>,
-        IHasCurrentViewModel
-        where TState : struct
-        where TTransition : struct
-    {
-        IViewModelStateDefinition<TState, TViewModel> DefineViewModelState<TViewModel>(TState state)
-            where TViewModel : INotifyPropertyChanged;//, new();
-
-        IViewModelStateDefinition<TState, TViewModel> DefineViewModelState<TViewModel>(
-            IViewModelStateDefinition<TState, TViewModel> stateDefinition)
-            where TViewModel : INotifyPropertyChanged;//, new();
-
-        
-
-    }
-
     public class ViewModelStateManager<TState, TTransition> : BaseStateManager<TState, TTransition>, IViewModelStateManager<TState,TTransition>
         where TState : struct
         where TTransition : struct
@@ -90,6 +65,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
 
         protected override async Task<bool> ChangeToState(TState oldState, TState newState)
         {
+            // ReSharper disable once SuspiciousTypeConversion.Global - NOT HELPFUL
             var aboutVM = CurrentViewModel as IAboutToLeaveViewModelState;
             var cancel = new CancelEventArgs();
             if (aboutVM != null)
@@ -106,6 +82,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
                 if (cancel.Cancel) return false;
             }
 
+            // ReSharper disable once SuspiciousTypeConversion.Global // NOT HELPFUL
             var leaving = CurrentViewModel as ILeavingViewModelState;
             if (leaving != null)
             {
@@ -139,7 +116,8 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             ViewModels[vm.GetType()] = vm;
             CurrentViewModel = vm;
 
-            var arrived = vm as IArrivingViewModelState;
+            // ReSharper disable once SuspiciousTypeConversion.Global // NOT HELPFUL
+            var arrived = vm as IArrivingViewModelState; 
             if (arrived != null)
             {
                 await arrived.Arriving();
@@ -160,7 +138,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             await base.ArrivedState(transition, currentState);
 
             var trans = transition as ViewModelTransitionDefinition<TState>;
-            if (trans != null && trans.ArrivedStateViewModel != null)
+            if (trans?.ArrivedStateViewModel != null)
             {
                 await trans.ArrivedStateViewModel(currentState, CurrentViewModel);
             }
@@ -173,7 +151,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             if (cancel.Cancel) return;
 
             var trans = transition as ViewModelTransitionDefinition<TState>;
-            if (trans != null && trans.LeavingStateViewModel != null)
+            if (trans?.LeavingStateViewModel != null)
             {
                 await trans.LeavingStateViewModel(currentState, CurrentViewModel, cancel);
             }

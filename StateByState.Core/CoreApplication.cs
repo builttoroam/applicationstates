@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Autofac;
@@ -24,11 +23,6 @@ namespace StateByState
         MainToSecond,
         AnyToMain,
         ThirdToMain
-    }
-
-    public interface ISpecial
-    {
-        string Data { get; }
     }
 
     public class CoreApplication : RootApplication, IHasStateManager<PageStates, PageTransitions>
@@ -60,8 +54,10 @@ namespace StateByState
                      vm.Completed -= State_Completed;
                      vm.UnableToComplete -= State_UnableToCompleted;
                  })
-                .WhenAboutToChange((cancel) => $"State: About to Change - {cancel.Cancel}".Log())
+                .WhenAboutToChange(cancel => $"State: About to Change - {cancel.Cancel}".Log())
+#pragma warning disable 1998
                 .WhenChangingFrom(async () => "State: Changing".Log())
+#pragma warning restore 1998
                 .WhenChangedTo(() => Debug.WriteLine("State: Changing"));
             #endregion
 
