@@ -32,6 +32,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
 
         public IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(IViewModelStateDefinition<TState, TViewModel> stateDefinition) where TViewModel : INotifyPropertyChanged//, new()
         {
+            $"Defining state for {typeof(TState).Name} with ViewModel type {typeof(TViewModel)}".Log();
             base.DefineState(stateDefinition);
             return stateDefinition;
         }
@@ -40,11 +41,13 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         {
             var transitionDefinition = new ViewModelTransitionDefinition<TState>();
             Transitions[transition] = transitionDefinition;
+            $"Defining transition {transition.GetType().Name} for type {typeof(TState)}".Log();
             return transitionDefinition;
         }
 
         protected override ITransitionDefinition<TState> CreateDefaultTransition()
         {
+            $"Creating default transition for type {typeof (TState)}".Log();
             return new ViewModelTransitionDefinition<TState>();
         }
 
@@ -70,38 +73,56 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             var cancel = new CancelEventArgs();
             if (aboutVM != null)
             {
-
+                "Invoking AboutToLeave".Log();
                 await aboutVM.AboutToLeave(cancel);
-                if (cancel.Cancel) return false;
+                if (cancel.Cancel)
+                {
+                    "ChangeToState cancelled by AboutToLeave".Log();
+                    return false;
+                }
             }
 
+            "Retrieving current state definition".Log();
             var currentVMStates = !oldState.Equals(default(TState)) ? States[oldState] as IGenerateViewModel : null;
             if (currentVMStates != null)
             {
+                "Invoking AboutToChangeFrom for existing state definition".Log();
                 await currentVMStates.InvokeAboutToChangeFromViewModel(CurrentViewModel, cancel);
-                if (cancel.Cancel) return false;
+                if (cancel.Cancel)
+                {
+                    "ChangeToState cancelled by existing state definition".Log();
+                    return false;
+                }
             }
 
             // ReSharper disable once SuspiciousTypeConversion.Global // NOT HELPFUL
             var leaving = CurrentViewModel as ILeavingViewModelState;
             if (leaving != null)
             {
+                "Invoking Leaving on current view model".Log();
                 await leaving.Leaving();
             }
 
             if (currentVMStates != null)
             {
+                "Invoking ChangingFrom on current state definition".Log();
                 await currentVMStates.InvokeChangingFromViewModel(CurrentViewModel);
             }
 
+            "Invoking ChangeToState to invoke state change".Log();
             var ok = await base.ChangeToState(oldState, newState);
-            if (!ok) return false;
+            if (!ok)
+            {
+                "ChangeToState aborted".Log();
+                return false;
+            }
             INotifyPropertyChanged vm = null;
             if (!newState.Equals(default(TState)))
             {
                 var current = States[newState] as IGenerateViewModel;
                 var genType = current?.ViewModelType;
 
+                "Retrieving existing ViewModel for new state".Log();
                 vm = Existing(genType);
             }
 
@@ -109,9 +130,9 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             {
                 var newGen = States[newState] as IGenerateViewModel;
                 if (newGen == null) return false;
+                "Generating ViewModel for new state".Log();
                 vm = await newGen.Generate(DependencyContainer);
             }
-            if (vm == null) return false;
 
             ViewModels[vm.GetType()] = vm;
             CurrentViewModel = vm;
@@ -120,6 +141,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             var arrived = vm as IArrivingViewModelState; 
             if (arrived != null)
             {
+                "Invoking Arriving on new ViewModel".Log();
                 await arrived.Arriving();
             }
 
@@ -127,6 +149,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             currentVMStates = States[newState] as IGenerateViewModel;
             if (currentVMStates != null)
             {
+                "Invoking ChangedTo on new state definition".Log();
                 await currentVMStates.InvokeChangedToViewModel(CurrentViewModel);
             }
 

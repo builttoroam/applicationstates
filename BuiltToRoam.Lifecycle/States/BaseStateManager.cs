@@ -24,6 +24,7 @@ namespace BuiltToRoam.Lifecycle.States
             var vals = Enum.GetValues(typeof (TState));
             foreach (var enumVal in vals)
             {
+                $"Defining state {enumVal}".Log();
                 DefineState((TState) enumVal);
             }
         }
@@ -36,7 +37,7 @@ namespace BuiltToRoam.Lifecycle.States
 
         public virtual IStateDefinition<TState> DefineState(IStateDefinition<TState> stateDefinition)
         {
-            Debug.WriteLine("Defining state of type " + stateDefinition.GetType().Name);
+            $"Defining state of type {stateDefinition.GetType().Name}".Log();
             States[stateDefinition.State] = stateDefinition;
             return stateDefinition;
         }
@@ -45,35 +46,35 @@ namespace BuiltToRoam.Lifecycle.States
         {
             var transitionDefinition = new BaseTransitionDefinition<TState>();
             Transitions[transition] = transitionDefinition;
-            Debug.WriteLine("Defining transition of type " + transition.GetType().Name);
+            $"Defining transition of type {transition.GetType().Name}".Log();
             return transitionDefinition;
         }
 
         public async Task<bool> ChangeTo(TState newState, bool useTransitions = true)
         {
-            Debug.WriteLine($"Changing to state {newState} ({useTransitions})");
+            $"Changing to state {newState} ({useTransitions})".Log();
             var current = CurrentState;
             if (current.Equals(newState))
             {
-                Debug.WriteLine("Transitioning to same state - doing nothing");
+                "Transitioning to same state - doing nothing".Log();
                 return true;
             }
 
 
             if (!current.Equals(default(TState)))
             {
-                Debug.WriteLine("Current state is " + current);
+                $"Current state is {current}".Log();
                 var currentStateDef = States[current];
                 var cancel = new CancelEventArgs();
                 if (currentStateDef.AboutToChangeFrom != null)
                 {
-                    Debug.WriteLine("Invoking 'AboutToChangeFrom' on current state definition");
+                    "Invoking 'AboutToChangeFrom' on current state definition".Log();
                     await currentStateDef.AboutToChangeFrom(cancel);
-                    Debug.WriteLine("'AboutToChangeFrom' completed");
+                    "'AboutToChangeFrom' completed".Log();
                 }
                 if (cancel.Cancel)
                 {
-                    Debug.WriteLine("Cancelling state transition invoking 'AboutToChangeFrom'");
+                    "Cancelling state transition invoking 'AboutToChangeFrom'".Log();
                     return false;
                 }
             }
@@ -81,57 +82,57 @@ namespace BuiltToRoam.Lifecycle.States
 
             try
             {
-                Debug.WriteLine("Invoking internal ChangeToState to perform state change");
+                "Invoking internal ChangeToState to perform state change".Log();
                 var proceed = await ChangeToState(current, newState);
                 if (!proceed)
                 {
-                    Debug.WriteLine("Unable to complete ChangeToState so exiting the ChangeTo, returning false");
+                    "Unable to complete ChangeToState so exiting the ChangeTo, returning false".Log();
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Exception: " + ex.Message);
+                ex.LogException();
                 return false;
             }
 
-            Debug.WriteLine($"About to updated CurrentState (currently: {CurrentState})");
+            $"About to updated CurrentState (currently: {CurrentState})".Log();
             CurrentState = newState;
-            Debug.WriteLine($"CurrentState updated (now: {CurrentState})");
+            $"CurrentState updated (now: {CurrentState})".Log();
 
             var newStateDef = States.SafeDictionaryValue<TState,IStateDefinition<TState>, IStateDefinition<TState>>(newState);
             if (newStateDef.ChangedTo != null)
             {
-                Debug.WriteLine($"State definition found, of type {newStateDef.GetType().Name}, invoking ChangedTo method");
+                $"State definition found, of type {newStateDef.GetType().Name}, invoking ChangedTo method".Log();
                 await newStateDef.ChangedTo();
-                Debug.WriteLine("ChangedTo completed");
+                "ChangedTo completed".Log(); 
             }
             else
             {
-                Debug.WriteLine("No new state definition");
+                "No new state definition".Log();
             }
 
             try
             {
                 if (StateChanged != null)
                 {
-                    Debug.WriteLine("Invoking StateChanged event");
+                    "Invoking StateChanged event".Log();
                     StateChanged.Invoke(this, new StateEventArgs<TState>(newState, useTransitions));
-                    Debug.WriteLine("StateChanged event completed");
+                    "StateChanged event completed".Log();
                 }
                 else
                 {
-                    Debug.WriteLine("Nothing listening to StateChanged");
+                    "Nothing listening to StateChanged".Log();
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Exception:" + ex.Message);
+                ex.LogException();
                 // Ignore any errors caused by the event being raised, as 
                 // the state change has still occurred
             }
 
-            Debug.WriteLine("ChangeTo completed");
+            "ChangeTo completed".Log();
             return true;
         }
 
@@ -139,13 +140,12 @@ namespace BuiltToRoam.Lifecycle.States
         protected virtual async Task<bool> ChangeToState(TState oldState, TState newState)
 #pragma warning restore 1998
         {
-            if (!oldState.Equals(default(TState)))
+            if (oldState.Equals(default(TState))) return true;
+            var currentStateDef = States[oldState];
+            if (currentStateDef.ChangingFrom != null)
             {
-                var currentStateDef = States[oldState];
-                if (currentStateDef.ChangingFrom != null)
-                {
-                    await currentStateDef.ChangingFrom();
-                }
+                "Invoking 'ChangingFrom'".Log();
+                await currentStateDef.ChangingFrom();
             }
 
 
@@ -172,16 +172,36 @@ namespace BuiltToRoam.Lifecycle.States
 
         private async Task<bool> InternalTransition(ITransitionDefinition<TState> transition, bool useTransition)
         {
-
-            if (!transition.StartState.Equals(CurrentState) && !transition.StartState.Equals(default(TState))) return false;
+            $"Checking initial state {CurrentState} and transition start state {transition.StartState}".Log();
+            if (!transition.StartState.Equals(CurrentState) && !transition.StartState.Equals(default(TState)))
+            {
+                "Current state doesn't match start state of transition".Log();
+                return false;
+            }
             var cancel = new CancelEventArgs();
+            "Invoking LeavingState".Log();
             await LeavingState(transition, CurrentState, cancel);
+            "LeavingState completed".Log();
 
-            if (cancel.Cancel) return false;
+            if (cancel.Cancel)
+            {
+                "Transition cancelled by LeavingState".Log();
+                return false;
+            }
+
+            "Invoking ArrivingState".Log();
             await ArrivingState(transition);
+            "ArrivingState completed, now invoking ChangeTo".Log();
+            
+            if (!await ChangeTo(transition.EndState, useTransition))
+            {
+                "ChangeTo not completed, transition aborted".Log();
+                return false;
+            }
 
-            if (!await ChangeTo(transition.EndState)) return false;
+            "Invokign ArrivedState".Log();
             await ArrivedState(transition, CurrentState);
+            "ArrivedState completed".Log();
             return true;
         }
 

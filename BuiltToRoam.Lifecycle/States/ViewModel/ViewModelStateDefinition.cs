@@ -10,22 +10,25 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         BaseStateDefinition<TState>,
         IViewModelStateDefinition<TState, TViewModel>
         where TState : struct
-        where TViewModel : INotifyPropertyChanged //, new()
+        where TViewModel : INotifyPropertyChanged 
     {
         public Type ViewModelType => typeof(TViewModel);
 
         public async Task<INotifyPropertyChanged> Generate(IContainer container)
         {
+            $"Creating instance of {typeof(TViewModel).Name}".Log();
             var vm = ServiceLocator.Current.GetInstance<TViewModel>();
-            //var vm = new TViewModel();
 
-            // Attempt to register any classes (ie nested view models) that may be required
+            "Registering dependencies".Log();
             (vm as ICanRegisterDependencies)?.RegisterDependencies(container);
 
             if (InitialiseViewModel != null)
             {
+                "Initialising ViewModel".Log();
                 await InitialiseViewModel(vm);
             }
+
+            "ViewModel generated".Log();
             return vm;
         }
 
@@ -36,6 +39,8 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         public async Task InvokeAboutToChangeFromViewModel(INotifyPropertyChanged viewModel, CancelEventArgs cancel)
         {
             if (AboutToChangeFromViewModel == null) return;
+
+            "Invoking AboutToChangeFromViewModel".Log();
             await AboutToChangeFromViewModel((TViewModel)viewModel, cancel);
         }
 
@@ -44,6 +49,8 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         public async Task InvokeChangingFromViewModel(INotifyPropertyChanged viewModel)
         {
             if (ChangingFromViewModel == null) return;
+
+            "Invoking ChangingFromViewModel".Log();
             await ChangingFromViewModel((TViewModel)viewModel);
         }
 
@@ -53,100 +60,9 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         public async Task InvokeChangedToViewModel(INotifyPropertyChanged viewModel)
         {
             if (ChangedToViewModel == null) return;
+
+            "Invoking ChangedToViewModel".Log();
             await ChangedToViewModel((TViewModel)viewModel);
         }
-
-
-    }
-
-    public static class ViewModelStateHelper
-    {
-        public static IViewModelStateDefinition<TState, TViewModel> Initialise<TState, TViewModel>(
-            this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
-            Action<TViewModel> action)
-                    where TState : struct
-        where TViewModel : INotifyPropertyChanged
-
-        {
-#pragma warning disable 1998 // Convert sync method into async call
-            return stateDefinition.Initialise(async vm => action(vm));
-#pragma warning restore 1998
-        }
-
-        public static IViewModelStateDefinition<TState, TViewModel> Initialise<TState, TViewModel>(
-            this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
-            Func<TViewModel, Task> action)
-                    where TState : struct
-        where TViewModel : INotifyPropertyChanged
-
-        {
-            if (stateDefinition == null) return null;
-            stateDefinition.InitialiseViewModel = action;
-            return stateDefinition;
-        }
-
-        public static IViewModelStateDefinition<TState, TViewModel> WhenAboutToChange<TState, TViewModel>(
-    this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
-    Action<TViewModel,CancelEventArgs> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged
-        {
-#pragma warning disable 1998 // Convert sync method into async call
-            return stateDefinition.WhenAboutToChange(async (vm,cancel) => action(vm,cancel));
-#pragma warning restore 1998
-        }
-
-        public static IViewModelStateDefinition<TState, TViewModel> WhenAboutToChange<TState, TViewModel>(
-    this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
-    Func<TViewModel, CancelEventArgs, Task> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged
-        {
-            if (stateDefinition == null) return null;
-
-            stateDefinition.AboutToChangeFromViewModel = action;
-            return stateDefinition;
-        }
-
-        public static IViewModelStateDefinition<TState, TViewModel> WhenChangingFrom<TState, TViewModel>(
-this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
-Action<TViewModel> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged
-        {
-#pragma warning disable 1998  // Convert sync method into async call
-            return stateDefinition.WhenChangingFrom(async vm => action(vm));
-#pragma warning restore 1998
-        }
-
-        public static IViewModelStateDefinition<TState, TViewModel> WhenChangingFrom<TState, TViewModel>(
-this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
-Func<TViewModel, Task> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged
-        {
-            if (stateDefinition == null) return null;
-
-            stateDefinition.ChangingFromViewModel = action;
-            return stateDefinition;
-        }
-
-        public static IViewModelStateDefinition<TState, TViewModel> WhenChangedTo<TState, TViewModel>(
-this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
-Action<TViewModel> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged
-        {
-#pragma warning disable 1998  // Convert sync method into async call
-            return stateDefinition.WhenChangedTo(async vm=> action(vm));
-#pragma warning restore 1998
-        }
-
-        public static IViewModelStateDefinition<TState, TViewModel> WhenChangedTo<TState, TViewModel>(
-this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
-Func<TViewModel, Task> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged
-        {
-            if (stateDefinition == null) return null;
-
-            stateDefinition.ChangedToViewModel = action;
-            return stateDefinition;
-        }
-
     }
 }

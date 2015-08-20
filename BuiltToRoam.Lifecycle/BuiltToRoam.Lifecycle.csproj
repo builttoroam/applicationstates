@@ -47,6 +47,7 @@
     <Compile Include="States\BaseStateDefinition.cs" />
     <Compile Include="States\BaseStateManager.cs" />
     <Compile Include="States\BaseTransitionDefinition.cs" />
+    <Compile Include="States\StateHelper.cs" />
     <Compile Include="States\ViewModel\BaseViewModel.cs" />
     <Compile Include="States\ViewModel\IAboutToLeaveViewModelState.cs" />
     <Compile Include="States\ViewModel\IArrivingViewModelState.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="States\ViewModel\IViewModelStateManager.cs" />
     <Compile Include="States\ViewModel\IViewModelTransitionDefinition.cs" />
     <Compile Include="States\ViewModel\ViewModelStateDefinition.cs" />
+    <Compile Include="States\ViewModel\ViewModelStateHelper.cs" />
     <Compile Include="States\ViewModel\ViewModelStateManager.cs" />
     <Compile Include="States\ViewModel\ViewModelTransitionDefinition.cs" />
     <Compile Include="UIContext.cs" />
