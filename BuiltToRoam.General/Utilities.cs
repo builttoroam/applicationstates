@@ -18,8 +18,8 @@ namespace BuiltToRoam
             var type = value.GetType();
             var name = Enum.GetName(type, value);
 
-            //var typeInfo = type.GetField()
-            return type.GetField(name)
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.GetDeclaredField(name)
                 .GetCustomAttributes(false)
                 .OfType<TAttribute>()
                 .SingleOrDefault();

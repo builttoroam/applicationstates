@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Autofac;
 using BuiltToRoam;
-using BuiltToRoam.Lifecycle;
 using BuiltToRoam.Lifecycle.States;
 using BuiltToRoam.Lifecycle.States.ViewModel;
 
@@ -28,7 +25,7 @@ namespace StateByState
         //FourToOne
     }
 
-    public class ThirdViewModel:NotifyBase, IHasStateManager<ThirdStates,ThirdTransitions>
+    public class ThirdViewModel:BaseViewModel, IHasStateManager<ThirdStates,ThirdTransitions>
     {
         public event EventHandler ThirdCompleted;
 
@@ -41,72 +38,30 @@ namespace StateByState
             sm.DefineViewModelState<ThirdOneViewModel>(ThirdStates.One);
             sm.DefineViewModelState<ThirdTwoViewModel>(ThirdStates.Two);
             sm.DefineViewModelState<ThirdThreViewModel>(ThirdStates.Three);
-            sm.DefineViewModelState<ThirdFourViewModel>(ThirdStates.Four);
+            sm.DefineViewModelState<ThirdFourViewModel>(ThirdStates.Four)
+                .WhenChangedTo(vm =>
+                {
+                    vm.Done += Vm_Done;
+                }).
+                WhenChangingFrom(vm =>
+                {
+                    vm.Done -= Vm_Done;
+                });
             StateManager = sm;
-            //{
-            //    States = new Dictionary<ThirdStates, IStateDefinition<ThirdStates>>
-            //    {
-            //        {
-            //            ThirdStates.One, new ViewModelStateDefinition<ThirdStates, ThirdOneViewModel>
-            //            {
-            //                State = ThirdStates.One
-            //            }
-            //        },
-            //        {
-            //            ThirdStates.Two, new ViewModelStateDefinition<ThirdStates, ThirdTwoViewModel>
-            //            {
-            //                State = ThirdStates.Two
-            //            }
-            //        },
-            //        {
-            //            ThirdStates.Three, new ViewModelStateDefinition<ThirdStates, ThirdThreViewModel>
-            //            {
-            //                State = ThirdStates.Three
-            //            }
-            //        },
-            //        {
-            //            ThirdStates.Four, new ViewModelStateDefinition<ThirdStates, ThirdFourViewModel>
-            //            {
-            //                State = ThirdStates.Four
-            //            }
-            //        }
-            //    },
-            //    Transitions = new Dictionary<ThirdTransitions, ITransitionDefinition<ThirdStates>>
-            //    {
-            //        {
-            //            ThirdTransitions.OneToTwo,
-            //            new ViewModelTransitionDefinition<ThirdStates>
-            //            {
-            //                StartState = ThirdStates.One,
-            //                EndState = ThirdStates.Two,
-            //            }
-            //        },
-            //         {
-            //            ThirdTransitions.TwoToThree,
-            //            new ViewModelTransitionDefinition<ThirdStates>
-            //            {
-            //                StartState = ThirdStates.Two,
-            //                EndState = ThirdStates.Three,
-            //            }
-            //        },
-            //          {
-            //            ThirdTransitions.ThreeToFour,
-            //            new ViewModelTransitionDefinition<ThirdStates>
-            //            {
-            //                StartState = ThirdStates.Three,
-            //                EndState = ThirdStates.Four,
-            //            }
-            //        },
-            //           {
-            //            ThirdTransitions.FourToOne,
-            //            new ViewModelTransitionDefinition<ThirdStates>
-            //            {
-            //                StartState = ThirdStates.Four,
-            //                EndState = ThirdStates.One,
-            //            }
-            //        }
-            //    }
-            //};
+            
+        }
+
+        public override void RegisterDependencies(IContainer container)
+        {
+            base.RegisterDependencies(container);
+
+            (StateManager as ICanRegisterDependencies)?.RegisterDependencies(container);
+        }
+
+
+        private void Vm_Done(object sender, EventArgs e)
+        {
+            ThirdCompleted.SafeRaise(this);
         }
 
         public async Task Start()
@@ -140,5 +95,20 @@ namespace StateByState
         public class ThirdOneViewModel : NotifyBase { public string Title => "One"; }
     public class ThirdTwoViewModel : NotifyBase { public string Title => "Two"; }
     public class ThirdThreViewModel : NotifyBase { public string Title => "Three"; }
-    public class ThirdFourViewModel : NotifyBase { public string Title => "Four"; }
+
+    public class ThirdFourViewModel : NotifyBase
+    {
+        public event EventHandler Done;
+        public string Title { get; set; }= "Four";
+
+        public ThirdFourViewModel(ISpecial special)
+        {
+            Title = special.Data;
+        }
+
+        public void SayImDone()
+        {
+            Done.SafeRaise(this);
+        }
+    }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace BuiltToRoam.Lifecycle.States
 {
@@ -19,6 +20,15 @@ namespace BuiltToRoam.Lifecycle.States
 
         public IDictionary<TTransition, ITransitionDefinition<TState>> Transitions { get; set; } = new Dictionary<TTransition, ITransitionDefinition<TState>>();
 
+        public void DefineAllStates()
+        {
+            var vals = Enum.GetValues(typeof (TState));
+            foreach (var enumVal in vals)
+            {
+                DefineState((TState) enumVal);
+            }
+        }
+
         public virtual IStateDefinition<TState> DefineState(TState state)
         {
             var stateDefinition = new BaseStateDefinition<TState> { State = state };
@@ -27,6 +37,7 @@ namespace BuiltToRoam.Lifecycle.States
 
         public virtual IStateDefinition<TState> DefineState(IStateDefinition<TState> stateDefinition)
         {
+            Debug.WriteLine("Defining state of type " + stateDefinition.GetType().Name);
             States[stateDefinition.State] = stateDefinition;
             return stateDefinition;
         }
@@ -35,56 +46,93 @@ namespace BuiltToRoam.Lifecycle.States
         {
             var transitionDefinition = new BaseTransitionDefinition<TState>();
             Transitions[transition] = transitionDefinition;
+            Debug.WriteLine("Defining transition of type " + transition.GetType().Name);
             return transitionDefinition;
         }
 
         public async Task<bool> ChangeTo(TState newState, bool useTransitions = true)
         {
+            Debug.WriteLine($"Changing to state {newState} ({useTransitions})");
             var current = CurrentState;
-            if (current.Equals(newState)) return true;
+            if (current.Equals(newState))
+            {
+                Debug.WriteLine("Transitioning to same state - doing nothing");
+                return true;
+            }
 
 
             if (!current.Equals(default(TState)))
             {
+                Debug.WriteLine("Current state is " + current);
                 var currentStateDef = States[current];
                 var cancel = new CancelEventArgs();
                 if (currentStateDef.AboutToChangeFrom != null)
                 {
+                    Debug.WriteLine("Invoking 'AboutToChangeFrom' on current state definition");
                     await currentStateDef.AboutToChangeFrom(cancel);
+                    Debug.WriteLine("'AboutToChangeFrom' completed");
                 }
-                if (cancel.Cancel) return false;
+                if (cancel.Cancel)
+                {
+                    Debug.WriteLine("Cancelling state transition invoking 'AboutToChangeFrom'");
+                    return false;
+                }
             }
 
 
             try
             {
-
+                Debug.WriteLine("Invoking internal ChangeToState to perform state change");
                 var proceed = await ChangeToState(current, newState);
-                if (!proceed) return false;
+                if (!proceed)
+                {
+                    Debug.WriteLine("Unable to complete ChangeToState so exiting the ChangeTo, returning false");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Debug.WriteLine("Exception: " + ex.Message);
                 return false;
             }
-            CurrentState = newState;
 
-            var newStateDef = States[newState];
+            Debug.WriteLine($"About to updated CurrentState (currently: {CurrentState})");
+            CurrentState = newState;
+            Debug.WriteLine($"CurrentState updated (now: {CurrentState})");
+
+            var newStateDef = States.SafeDictionaryValue<TState,IStateDefinition<TState>, IStateDefinition<TState>>(newState);
             if (newStateDef.ChangedTo != null)
             {
+                Debug.WriteLine($"State definition found, of type {newStateDef.GetType().Name}, invoking ChangedTo method");
                 await newStateDef.ChangedTo();
+                Debug.WriteLine("ChangedTo completed");
+            }
+            else
+            {
+                Debug.WriteLine("No new state definition");
             }
 
             try
             {
-                StateChanged?.Invoke(this, new StateEventArgs<TState>(newState, useTransitions));
+                if (StateChanged != null)
+                {
+                    Debug.WriteLine("Invoking StateChanged event");
+                    StateChanged.Invoke(this, new StateEventArgs<TState>(newState, useTransitions));
+                    Debug.WriteLine("StateChanged event completed");
+                }
+                else
+                {
+                    Debug.WriteLine("Nothing listening to StateChanged");
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Debug.WriteLine("Exception:" + ex.Message);
                 // Ignore any errors caused by the event being raised, as 
                 // the state change has still occurred
             }
+
+            Debug.WriteLine("ChangeTo completed");
             return true;
         }
 

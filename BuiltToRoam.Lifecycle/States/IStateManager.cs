@@ -17,6 +17,8 @@ namespace BuiltToRoam.Lifecycle.States
 
         IDictionary<TTransition, ITransitionDefinition<TState>> Transitions { get; }
 
+        void DefineAllStates();
+
         IStateDefinition<TState> DefineState(TState state);
 
 

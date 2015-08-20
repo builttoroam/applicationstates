@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Autofac;
 using BuiltToRoam.Lifecycle;
 
 namespace StateByState
@@ -38,7 +39,7 @@ namespace StateByState
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
 
 #if DEBUG
@@ -70,13 +71,18 @@ namespace StateByState
 
             if (rootFrame.Content == null)
             {
+
+
                 var core = new CoreApplication();
                 var fn = new FrameNavigation<PageStates, PageTransitions>(rootFrame, core);
                 fn.Register<MainPage>(PageStates.Main);
                 fn.Register<SecondPage>(PageStates.Second);
                 fn.Register<ThirdPage>(PageStates.Third);
-                core.Start();
 
+                await core.Startup(builder =>
+                {
+                    builder.RegisterType<Special>().As<ISpecial>();
+                });
 
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
@@ -111,4 +117,10 @@ namespace StateByState
             deferral.Complete();
         }
     }
+
+    public class Special : ISpecial
+    {
+        public string Data { get { return "Special Info"; } }
+    }
+
 }

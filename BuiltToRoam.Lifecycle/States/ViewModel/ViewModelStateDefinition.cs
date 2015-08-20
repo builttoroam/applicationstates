@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Autofac;
 using BuiltToRoam.Lifecycle.States.ViewModel;
+using Microsoft.Practices.ServiceLocation;
 
 namespace BuiltToRoam.Lifecycle.States.ViewModel
 {
@@ -9,13 +11,18 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         BaseStateDefinition<TState>,
         IViewModelStateDefinition<TState, TViewModel>
         where TState : struct
-        where TViewModel : INotifyPropertyChanged, new()
+        where TViewModel : INotifyPropertyChanged //, new()
     {
         public Type ViewModelType => typeof(TViewModel);
 
-        public async Task<INotifyPropertyChanged> Generate()
+        public async Task<INotifyPropertyChanged> Generate(IContainer container)
         {
-            var vm = new TViewModel();
+            var vm = ServiceLocator.Current.GetInstance<TViewModel>();
+            //var vm = new TViewModel();
+
+            // Attempt to register any classes (ie nested view models) that may be required
+            (vm as ICanRegisterDependencies)?.RegisterDependencies(container);
+
             if (InitialiseViewModel != null)
             {
                 await InitialiseViewModel(vm);
@@ -68,7 +75,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
             Action<TViewModel> action)
                     where TState : struct
-        where TViewModel : INotifyPropertyChanged, new()
+        where TViewModel : INotifyPropertyChanged//, new()
 
         {
             return stateDefinition.Initialise(async vm => action(vm));
@@ -78,7 +85,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
             Func<TViewModel, Task> action)
                     where TState : struct
-        where TViewModel : INotifyPropertyChanged, new()
+        where TViewModel : INotifyPropertyChanged//, new()
 
         {
             if (stateDefinition == null) return stateDefinition;
@@ -89,7 +96,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         public static IViewModelStateDefinition<TState, TViewModel> WhenAboutToChange<TState, TViewModel>(
     this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
     Action<TViewModel,CancelEventArgs> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged, new()
+        where TViewModel : INotifyPropertyChanged//, new()
         {
             return stateDefinition.WhenAboutToChange(async (vm,cancel) => action(vm,cancel));
         }
@@ -97,7 +104,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         public static IViewModelStateDefinition<TState, TViewModel> WhenAboutToChange<TState, TViewModel>(
     this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
     Func<TViewModel, CancelEventArgs, Task> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged, new()
+        where TViewModel : INotifyPropertyChanged//, new()
         {
             if (stateDefinition == null) return stateDefinition;
 
@@ -108,7 +115,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
         public static IViewModelStateDefinition<TState, TViewModel> WhenChangingFrom<TState, TViewModel>(
 this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
 Action<TViewModel> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged, new()
+        where TViewModel : INotifyPropertyChanged//, new()
         {
             return stateDefinition.WhenChangingFrom(async vm => action(vm));
         }
@@ -116,7 +123,7 @@ Action<TViewModel> action) where TState : struct
         public static IViewModelStateDefinition<TState, TViewModel> WhenChangingFrom<TState, TViewModel>(
 this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
 Func<TViewModel, Task> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged, new()
+        where TViewModel : INotifyPropertyChanged//, new()
         {
             if (stateDefinition == null) return stateDefinition;
 
@@ -127,7 +134,7 @@ Func<TViewModel, Task> action) where TState : struct
         public static IViewModelStateDefinition<TState, TViewModel> WhenChangedTo<TState, TViewModel>(
 this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
 Action<TViewModel> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged, new()
+        where TViewModel : INotifyPropertyChanged//, new()
         {
             return stateDefinition.WhenChangedTo(async vm=> action(vm));
         }
@@ -135,7 +142,7 @@ Action<TViewModel> action) where TState : struct
         public static IViewModelStateDefinition<TState, TViewModel> WhenChangedTo<TState, TViewModel>(
 this IViewModelStateDefinition<TState, TViewModel> stateDefinition,
 Func<TViewModel, Task> action) where TState : struct
-        where TViewModel : INotifyPropertyChanged, new()
+        where TViewModel : INotifyPropertyChanged//, new()
         {
             if (stateDefinition == null) return stateDefinition;
 

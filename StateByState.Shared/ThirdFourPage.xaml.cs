@@ -26,5 +26,10 @@ namespace StateByState
         {
             this.InitializeComponent();
         }
+
+        private void CompleteInternalPageClick(object sender, RoutedEventArgs e)
+        {
+            (DataContext as ThirdFourViewModel)?.SayImDone();
+        }
     }
 }

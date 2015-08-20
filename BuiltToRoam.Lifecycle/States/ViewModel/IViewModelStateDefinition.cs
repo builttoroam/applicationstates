@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace BuiltToRoam.Lifecycle.States.ViewModel
 {
     public interface IViewModelStateDefinition<TState,TViewModel> :IGenerateViewModel, IStateDefinition<TState> 
-        where TViewModel: INotifyPropertyChanged,new()
+        where TViewModel: INotifyPropertyChanged //,new()
         where TState : struct
     {
         Func<TViewModel, Task> InitialiseViewModel { get; set; }

@@ -8,7 +8,9 @@
     xmlns:lifecycle="using:BuiltToRoam.Lifecycle"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 <TextBlock Text="{Binding Title}" FontSize="50"></TextBlock>
-    </Grid>
+        <Button Content="Complete"
+                Click="CompleteInternalPageClick"></Button>
+    </StackPanel>
 </lifecycle:BasePage>

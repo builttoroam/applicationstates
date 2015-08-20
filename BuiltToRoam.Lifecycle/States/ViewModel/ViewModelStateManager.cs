@@ -1,23 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
 using BuiltToRoam.Lifecycle.States.ViewModel;
 
 namespace BuiltToRoam.Lifecycle.States.ViewModel
 {
-    public interface IViewModelStateManager<TState, TTransition> : 
+    public interface ICanRegisterDependencies
+    {
+        void RegisterDependencies(IContainer container);
+    }
+
+
+    public interface IViewModelStateManager<TState, TTransition> :
+        ICanRegisterDependencies,
         IStateManager<TState, TTransition>,
         IHasCurrentViewModel
         where TState : struct
         where TTransition : struct
     {
-        IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(TState state)
-            where TViewModel : INotifyPropertyChanged, new();
+        IViewModelStateDefinition<TState, TViewModel> DefineViewModelState<TViewModel>(TState state)
+            where TViewModel : INotifyPropertyChanged;//, new();
 
-        IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(
+        IViewModelStateDefinition<TState, TViewModel> DefineViewModelState<TViewModel>(
             IViewModelStateDefinition<TState, TViewModel> stateDefinition)
-            where TViewModel : INotifyPropertyChanged, new();
+            where TViewModel : INotifyPropertyChanged;//, new();
+
+        
 
     }
 
@@ -38,13 +49,13 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             return base.DefineState(stateDefinition);
         }
 
-        public IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(TState state) where TViewModel : INotifyPropertyChanged, new()
+        public IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(TState state) where TViewModel : INotifyPropertyChanged//, new()
         {
             var stateDefinition = new ViewModelStateDefinition<TState, TViewModel> { State = state };
             return DefineViewModelState(stateDefinition);
         }
 
-        public IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(IViewModelStateDefinition<TState, TViewModel> stateDefinition) where TViewModel : INotifyPropertyChanged, new()
+        public IViewModelStateDefinition<TState,TViewModel> DefineViewModelState<TViewModel>(IViewModelStateDefinition<TState, TViewModel> stateDefinition) where TViewModel : INotifyPropertyChanged//, new()
         {
             base.DefineState(stateDefinition);
             return stateDefinition;
@@ -121,7 +132,7 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
             {
                 var newGen = States[newState] as IGenerateViewModel;
                 if (newGen == null) return false;
-                vm = await newGen.Generate();
+                vm = await newGen.Generate(DependencyContainer);
             }
             if (vm == null) return false;
 
@@ -169,6 +180,16 @@ namespace BuiltToRoam.Lifecycle.States.ViewModel
 
         }
 
-
+        protected IContainer DependencyContainer { get; private set; }
+        public void RegisterDependencies(IContainer container)
+        {
+            DependencyContainer = container;
+            var cb = new ContainerBuilder();
+            foreach (var state in States.Values.OfType<IGenerateViewModel>())
+            {
+                cb.RegisterType(state.ViewModelType);
+            }
+            cb.Update(container);
+        }
     }
 }

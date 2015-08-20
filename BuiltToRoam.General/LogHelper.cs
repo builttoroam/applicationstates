@@ -8,13 +8,13 @@ namespace BuiltToRoam
 {
     public static class LogHelper
     {
-        public static void Log<TEntity>(TEntity entity, [CallerMemberName] string caller = null)
+        public static void Log<TEntity>(this TEntity entity, [CallerMemberName] string caller = null)
         {
             var json = JsonConvert.SerializeObject(entity);
-            Log(typeof(TEntity).Name + ": " + json, caller);
+            Log(typeof (TEntity).Name + ": " + json, caller);
         }
 
-        public static void Log(string message = null, [CallerMemberName] string caller = null)
+        public static void Log(this string message, [CallerMemberName] string caller = null)
         {
             try
             {
@@ -26,11 +26,12 @@ namespace BuiltToRoam
             }
         }
 
-        public static void Log(this Exception ex, string message = null, [CallerMemberName] string caller = null)
+        public static void LogException(this Exception ex, string message = null,
+            [CallerMemberName] string caller = null)
         {
             try
             {
-                Debug.WriteLine("Exception ({0}): {1}", caller, ex.Message);
+
                 InternalWriteException(caller + ": " + message, ex);
             }
             catch (Exception ext)
@@ -41,17 +42,23 @@ namespace BuiltToRoam
 
 
         private static ILogService logService;
+        private static bool hasLookedForLogService;
 
         private static ILogService LogService
         {
             get
             {
-                if (logService == null)
+                try
                 {
-                    logService = ServiceLocator.Current.GetInstance<ILogService>();
-
+                    if (hasLookedForLogService) return logService;
+                    hasLookedForLogService = true;
+                    return logService ?? (logService = ServiceLocator.Current.GetInstance<ILogService>());
                 }
-                return logService;
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error retrieving ILogService implementation: " + ex.Message);
+                    return null;
+                }
             }
         }
 
@@ -59,8 +66,8 @@ namespace BuiltToRoam
         {
             try
             {
-
-                LogService.Debug(message);
+                Debug.WriteLine(message);
+                LogService?.Debug(message);
             }
             catch (Exception ext)
             {
@@ -73,7 +80,8 @@ namespace BuiltToRoam
         {
             try
             {
-                LogService.Exception(message, ex);
+                Debug.WriteLine($"Exception ({message}): {ex.Message}");
+                LogService?.Exception(message, ex);
             }
             catch (Exception ext)
             {

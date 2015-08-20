@@ -46,7 +46,7 @@ namespace StateByState.Win8x
         /// search results, and so forth.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -84,7 +84,7 @@ namespace StateByState.Win8x
                 fn.Register<MainPage>(PageStates.Main);
                 fn.Register<SecondPage>(PageStates.Second);
                 fn.Register<ThirdPage>(PageStates.Third);
-                core.Start();
+                await core.Startup();
                 //#if WINDOWS_PHONE_APP
                 //                // Removes the turnstile navigation for startup.
                 //                if (rootFrame.ContentTransitions != null)

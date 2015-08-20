@@ -50,9 +50,7 @@ namespace StateByState
         public SecondViewModel()
         {
             StateManager = new BaseStateManager<SecondStates, SecondStateTransitions>();
-            StateManager.DefineState(SecondStates.State1);
-            StateManager.DefineState(SecondStates.State2);
-            StateManager.DefineState(SecondStates.State3);
+            StateManager.DefineAllStates();
             //{
             //    States = new Dictionary<SecondStates, IStateDefinition<SecondStates>>
             //    {
@@ -174,7 +172,7 @@ namespace StateByState
         {
            await  StateManager.ChangeTo(SecondStates.State1);
             await StateManager2.ChangeTo(SecondStates2.StateX);
-            await TaskEx.Delay(1000);
+            await Task.Delay(1000);
             Debug.WriteLine("Break");
         }
 
