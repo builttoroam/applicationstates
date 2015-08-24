@@ -6,37 +6,18 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
-using Autofac;
+using BuiltToRoam;
 using BuiltToRoam.Lifecycle.States;
+using Java.Util;
 
 namespace StateByState.Android
 {
-    [Activity(MainLauncher = true, Icon = "@drawable/icon")]
-    public class StartActivity : Activity
-    {
-        protected override async void OnCreate(Bundle bundle)
-        {
-            base.OnCreate(bundle);
-
-            var core = new CoreApplication();
-            var fn = new AcitivityNavigation<PageStates, PageTransitions>(this, core);
-            fn.Register<MainActivity>(PageStates.Main);
-            fn.Register<SecondActivity>(PageStates.Second);
-            //fn.Register<ThirdActivity>(PageStates.Third);
-            await core.Startup(builder =>
-            {
-                builder.RegisterType<Special>().As<ISpecial>();
-            });
-
-        }
-    }
-
-
     [Activity(Label = "@string/FirstTitle", Icon = "@drawable/icon")]
-    public class MainActivity : Activity
+    public class MainActivity : BaseActivity
     {
         int count = 1;
 
+        public MainViewModel CurrentViewModel => DataContext as MainViewModel;
 
         protected override async void OnCreate(Bundle bundle)
         {
@@ -54,74 +35,48 @@ namespace StateByState.Android
 
             button.Click += delegate
             {
-                //button.Text = string.Format("{0} clicks!", count++);
-                var intent = new Intent(this, typeof (SecondActivity));
-                StartActivity(intent);
+                CurrentViewModel.Test();
+                ////button.Text = string.Format("{0} clicks!", count++);
+                //var intent = new Intent(this, typeof (SecondActivity));
+                //StartActivity(intent);
             };
         }
     }
 
 
-    [Activity(Label = "@string/SecondTitle")]
-    public class SecondActivity : Activity
+    public class VisualStateWrapper<TState, TTransition>
+        where TState : struct
+        where TTransition: struct
     {
-        protected override void OnCreate(Bundle bundle)
+        private IStateManager<TState, TTransition> stateManager;
+        public IDictionary<TState, Action<bool>> States { get; } =new Dictionary<TState,Action<bool>>();
+
+        public static string StateManagerName => nameof(StateManager);
+
+
+        public IStateManager<TState, TTransition> StateManager
         {
-            base.OnCreate(bundle);
-
-            SetContentView(Resource.Layout.Second);
-
-        }
-    }
-
-
-
-    public class AcitivityNavigation<TState, TTransition>
-       where TState : struct
-       where TTransition : struct
-    {
-        public IDictionary<TState, Type> NavigationIndex { get; } = new Dictionary<TState, Type>();
-
-        public IStateManager<TState, TTransition> StateManager { get; }
-
-        private Activity RootActivity { get; }
-
-        public AcitivityNavigation(Activity rootActivity,
-            IHasStateManager<TState, TTransition> hasStateManager,
-            string registerAs = null)
-        {
-            var stateManager = hasStateManager.StateManager;
-            if (registerAs == null)
+            get { return stateManager; }
+            set
             {
-                registerAs = hasStateManager.GetType().Name;
+                if (stateManager == value) return;
+                if (stateManager != null)
+                {
+                    stateManager.StateChanged -= StateManager_StateChanged;
+                }
+                stateManager = value;
+                if (stateManager != null)
+                {
+                    stateManager.StateChanged += StateManager_StateChanged;
+                }
             }
-            //Application.Current.Resources[registerAs] = this;
-            RootActivity = rootActivity;
-            //RootActivity.Tag = registerAs;
-            StateManager = stateManager;
-            StateManager.StateChanged += StateManager_StateChanged;
         }
 
         private void StateManager_StateChanged(object sender, StateEventArgs<TState> e)
         {
-            var tp = NavigationIndex[e.State];
-            var intent = new Intent(RootActivity, tp);
-            RootActivity.StartActivity(intent);
-            //if (RootActivity.BackStack.FirstOrDefault()?.SourcePageType == tp)
-            //{
-            //    RootActivity.GoBack();
-            //}
-            //else
-            //{
-            //    RootActivity.Navigate(tp);
-            //}
+            var state = States.SafeDictionaryValue<TState, Action<Boolean>, Action<bool>>(e.State);
+            state?.Invoke(e.UseTransitions);
         }
-
-        public void Register<TPage>(TState state)
-        {
-            NavigationIndex[state] = typeof(TPage);
-        }
-
     }
 }
 

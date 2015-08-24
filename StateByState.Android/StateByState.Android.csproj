@@ -74,9 +74,13 @@
     <Compile Include="..\StateByState.Shared\Special.cs">
       <Link>Special.cs</Link>
     </Compile>
+    <Compile Include="AcitivityNavigation.cs" />
+    <Compile Include="BaseActivity.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SecondActivity.cs" />
+    <Compile Include="StartActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

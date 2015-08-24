@@ -72,7 +72,7 @@ namespace StateByState
 
         public void ToFirst()
         {
-            StateManager.Transition(SecondStates.State2);
+            StateManager.Transition(SecondStates.State1);
         }
         public void ToSecond()
         {

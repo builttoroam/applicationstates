@@ -63,6 +63,15 @@ namespace StateByState.Android
 			// aapt resource value: 0x7f050000
 			public const int MyButton = 2131034112;
 			
+			// aapt resource value: 0x7f050001
+			public const int MyButton1 = 2131034113;
+			
+			// aapt resource value: 0x7f050002
+			public const int MyButton2 = 2131034114;
+			
+			// aapt resource value: 0x7f050003
+			public const int MyButton3 = 2131034115;
+			
 			static Id()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
