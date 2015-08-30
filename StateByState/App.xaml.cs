@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Autofac;
 using BuiltToRoam.Lifecycle;
+using StateByState.Shared;
 
 namespace StateByState
 {
@@ -62,12 +63,15 @@ namespace StateByState
             if (rootFrame.Content == null)
             {
 
+                NavigationHelper.Register<PageStates, MainPage>(PageStates.Main);
+                NavigationHelper.Register<PageStates, SecondPage>(PageStates.Second);
+                NavigationHelper.Register<PageStates, ThirdPage>(PageStates.Third);
+                NavigationHelper.Register<SecondaryStates, MainPage>(SecondaryStates.Main);
 
                 var core = new CoreApplication();
                 var fn = new FrameNavigation<PageStates, PageTransitions>(rootFrame, core);
-                fn.Register<MainPage>(PageStates.Main);
-                fn.Register<SecondPage>(PageStates.Second);
-                fn.Register<ThirdPage>(PageStates.Third);
+
+                var wm = new WindowManager(core);
 
                 await core.Startup(builder =>
                 {

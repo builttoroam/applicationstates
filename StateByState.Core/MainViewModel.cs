@@ -2,13 +2,16 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BuiltToRoam;
+using BuiltToRoam.Lifecycle.States.ViewModel;
 
 namespace StateByState
 {
-    public class MainViewModel : NotifyBase
+    public class MainViewModel : BaseViewModel
     {
         public event EventHandler Completed;
         public event EventHandler UnableToComplete;
+
+        public event EventHandler SpawnNewRegion;
 
         public MainViewModel(ISpecial special)
         {
@@ -34,5 +37,12 @@ namespace StateByState
         {
             UnableToComplete?.Invoke(this, EventArgs.Empty);
         }
+
+        public void Spawn()
+        {
+            SpawnNewRegion.SafeRaise(this);
+
+        }
+
     }
 }

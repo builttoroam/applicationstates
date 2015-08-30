@@ -25,16 +25,20 @@ namespace StateByState
         ThirdToMain
     }
 
-    public class CoreApplication : RootApplication, IHasStateManager<PageStates, PageTransitions>
+
+
+    public class CoreApplication : RootApplication, IHasStateManager<PageStates, PageTransitions>, IHasRegionManager
     {
         public IStateManager<PageStates, PageTransitions> StateManager { get; }
+
+        public IRegionManager RegionManager { get; }
 
         public CoreApplication()
         {
 
+            #region State Definitions
             var sm = new ViewModelStateManager<PageStates, PageTransitions>();
 
-            #region State Definition - Main
             sm.DefineViewModelState<MainViewModel>(PageStates.Main)
                 .Initialise(async vm =>
                 {
@@ -46,6 +50,7 @@ namespace StateByState
                     "VM State: When Changed To".Log();
                     vm.Completed += State_Completed;
                     vm.UnableToComplete += State_UnableToCompleted;
+                    vm.SpawnNewRegion += Vm_SpawnNewRegion;
                 })
                  .WhenAboutToChange((vm, cancel) => $"VM State: About to Change - {cancel.Cancel}".Log())
                  .WhenChangingFrom(vm =>
@@ -59,9 +64,7 @@ namespace StateByState
                 .WhenChangingFrom(async () => "State: Changing".Log())
 #pragma warning restore 1998
                 .WhenChangedTo(() => Debug.WriteLine("State: Changing"));
-            #endregion
 
-            #region State Definition - Second
             sm.DefineViewModelState<SecondViewModel>(PageStates.Second)
                 .Initialise(async vm => await vm.InitSecond())
                 .WhenChangedTo(vm =>
@@ -72,9 +75,7 @@ namespace StateByState
                 {
                     vm.SecondCompleted -= SecondCompleted;
                 });
-            #endregion
 
-            #region State Definition - Third
             sm.DefineViewModelState<ThirdViewModel>(PageStates.Third)
                 .WhenChangedTo(vm =>
                 {
@@ -84,7 +85,6 @@ namespace StateByState
                 {
                     vm.ThirdCompleted -= ThirdCompleted;
                 });
-            #endregion
 
 
             StateManager = sm;
@@ -100,15 +100,24 @@ namespace StateByState
             sm.DefineTransition(PageTransitions.ThirdToMain)
                 .From(PageStates.Third)
                 .To(PageStates.Main);
+#endregion
 
+            RegionManager=new RegionManager();
+            RegionManager.DefineRegion<SecondaryApplication>();
         }
 
+        private void Vm_SpawnNewRegion(object sender, EventArgs e)
+        {
+            RegionManager.CreateRegion<SecondaryApplication>();
+        }
 
         protected override async Task BuildCoreDependencies(IContainer container)
         {
             await base.BuildCoreDependencies(container);
 
             (StateManager as ICanRegisterDependencies)?.RegisterDependencies(container);
+
+            RegionManager?.RegisterDependencies(container);
 
         }
 

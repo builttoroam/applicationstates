@@ -24,10 +24,10 @@ namespace StateByState
             var frame = Split.FindName("InnerFrame") as Frame;
 
             var fn = new FrameNavigation<ThirdStates, ThirdTransitions>(frame, CurrentViewModel);
-            fn.Register<ThrirdOnePage>(ThirdStates.One);
-            fn.Register<ThirdTwoPage>(ThirdStates.Two);
-            fn.Register<ThirdThreePage>(ThirdStates.Three);
-            fn.Register<ThirdFourPage>(ThirdStates.Four);
+            NavigationHelper.Register<ThirdStates,ThrirdOnePage>(ThirdStates.One);
+            NavigationHelper.Register<ThirdStates,ThirdTwoPage>(ThirdStates.Two);
+            NavigationHelper.Register<ThirdStates,ThirdThreePage>(ThirdStates.Three);
+            NavigationHelper.Register<ThirdStates,ThirdFourPage>(ThirdStates.Four);
             await CurrentViewModel.Start();
         }
 

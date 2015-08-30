@@ -6,4 +6,9 @@ namespace BuiltToRoam.Lifecycle.States
     {
         IStateManager<TState, TTransition> StateManager { get; } 
     }
+
+    public interface IHasRegionManager
+    {
+        IRegionManager RegionManager { get; }
+    }
 }

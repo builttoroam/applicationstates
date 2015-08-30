@@ -41,12 +41,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationRegion.cs" />
     <Compile Include="ISettingsService.cs" />
     <Compile Include="IUiContext.cs" />
+    <Compile Include="RegionManager.cs" />
     <Compile Include="RootApplication.cs" />
     <Compile Include="States\BaseStateDefinition.cs" />
     <Compile Include="States\BaseStateManager.cs" />
     <Compile Include="States\BaseTransitionDefinition.cs" />
+    <Compile Include="States\IApplicationRegion.cs" />
     <Compile Include="States\StateHelper.cs" />
     <Compile Include="States\ViewModel\BaseViewModel.cs" />
     <Compile Include="States\ViewModel\IAboutToLeaveViewModelState.cs" />
