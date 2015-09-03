@@ -6,7 +6,7 @@ using BuiltToRoam.Lifecycle.States.ViewModel;
 
 namespace BuiltToRoam.Lifecycle
 {
-    public class ApplicationRegion:IApplicationRegion, ICanRegisterDependencies
+    public class ApplicationRegion:IApplicationRegion
     {
         public event EventHandler CloseRegion;
 
@@ -18,11 +18,19 @@ namespace BuiltToRoam.Lifecycle
         {
         }
 
+        protected IRegionManager Manager { get; private set; }
 
 #pragma warning disable 1998 // Task to allow for async override
-        public virtual async Task Startup()
+        public async Task Startup(IRegionManager manager)
 #pragma warning restore 1998
         {
+            Manager = manager;
+            await CompleteStartup();
+        }
+
+        protected virtual async Task CompleteStartup()
+        {
+            
         }
 
         protected void OnCloseRegion()

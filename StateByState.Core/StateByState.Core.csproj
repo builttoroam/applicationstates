@@ -47,7 +47,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreApplication.cs" />
+    <Compile Include="SampleApplication.cs" />
     <Compile Include="ISpecial.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

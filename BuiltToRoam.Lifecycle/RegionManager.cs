@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Autofac;
 using BuiltToRoam.Lifecycle.States;
 using BuiltToRoam.Lifecycle.States.ViewModel;
@@ -15,6 +16,8 @@ namespace BuiltToRoam.Lifecycle
         void DefineRegion<TRegion>() where TRegion : IApplicationRegion;
 
         TRegion CreateRegion<TRegion>() where TRegion : IApplicationRegion;
+
+        TRegion RegionByType<TRegion>() where TRegion : IApplicationRegion;
     }
 
     public class RegionManager:IRegionManager
@@ -31,6 +34,11 @@ namespace BuiltToRoam.Lifecycle
         public void DefineRegion<TRegion>() where TRegion : IApplicationRegion
         {
             RegionTypes.Add(typeof(TRegion));
+        }
+
+        public TRegion RegionByType<TRegion>() where TRegion : IApplicationRegion
+        {
+            return (TRegion)Regions.Values.FirstOrDefault(x => x.GetType() == typeof (TRegion));
         }
 
         public void RegisterDependencies(IContainer container)

@@ -27,13 +27,40 @@ namespace StateByState
 
 
 
-    public class CoreApplication : RootApplication, IHasStateManager<PageStates, PageTransitions>, IHasRegionManager
+    public class SampleApplication : BaseApplication,IHasRegionManager
     {
-        public IStateManager<PageStates, PageTransitions> StateManager { get; }
 
         public IRegionManager RegionManager { get; }
 
-        public CoreApplication()
+        public SampleApplication()
+        {
+
+            RegionManager=new RegionManager();
+            RegionManager.DefineRegion<MainWindow>();
+            RegionManager.DefineRegion<SecondaryApplication>();
+        }
+
+        protected override async Task CompleteStartup()
+        {
+            await base.CompleteStartup();
+
+            RegionManager.CreateRegion<MainWindow>();
+        }
+
+        protected override async Task BuildCoreDependencies(IContainer container)
+        {
+            await base.BuildCoreDependencies(container);
+
+            RegionManager?.RegisterDependencies(container);
+        }
+    }
+
+    public class MainWindow : ApplicationRegion, IHasStateManager<PageStates, PageTransitions>
+    {
+        public IStateManager<PageStates, PageTransitions> StateManager { get; }
+
+
+        public MainWindow()
         {
 
             #region State Definitions
@@ -55,7 +82,7 @@ namespace StateByState
                  .WhenAboutToChange((vm, cancel) => $"VM State: About to Change - {cancel.Cancel}".Log())
                  .WhenChangingFrom(vm =>
                  {
-                     "VM State: When Changing From".Log(); 
+                     "VM State: When Changing From".Log();
                      vm.Completed -= State_Completed;
                      vm.UnableToComplete -= State_UnableToCompleted;
                  })
@@ -100,26 +127,25 @@ namespace StateByState
             sm.DefineTransition(PageTransitions.ThirdToMain)
                 .From(PageStates.Third)
                 .To(PageStates.Main);
-#endregion
+            #endregion
 
-            RegionManager=new RegionManager();
-            RegionManager.DefineRegion<SecondaryApplication>();
+           
         }
 
         private void Vm_SpawnNewRegion(object sender, EventArgs e)
         {
-            RegionManager.CreateRegion<SecondaryApplication>();
+           Manager.CreateRegion<SecondaryApplication>();
         }
 
-        protected override async Task BuildCoreDependencies(IContainer container)
+        public override void RegisterDependencies(IContainer container)
         {
-            await base.BuildCoreDependencies(container);
+            base.RegisterDependencies(container);
 
             (StateManager as ICanRegisterDependencies)?.RegisterDependencies(container);
 
-            RegionManager?.RegisterDependencies(container);
-
+            //RegionManager?.RegisterDependencies(container);
         }
+
 
         protected async override Task CompleteStartup()
         {
@@ -127,7 +153,8 @@ namespace StateByState
 
             await StateManager.ChangeTo(PageStates.Main, false);
         }
-        
+
+
         private async void State_Completed(object sender, EventArgs e)
         {
             await StateManager.Transition(PageTransitions.MainToSecond);

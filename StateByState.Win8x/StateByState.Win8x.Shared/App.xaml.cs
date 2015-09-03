@@ -79,7 +79,7 @@ namespace StateByState.Win8x
             if (rootFrame.Content == null)
             {
 
-                var core = new CoreApplication();
+                var core = new SampleApplication();
                 var fn = new FrameNavigation<PageStates, PageTransitions>(rootFrame, core);
                 fn.Register<MainPage>(PageStates.Main);
                 fn.Register<SecondPage>(PageStates.Second);

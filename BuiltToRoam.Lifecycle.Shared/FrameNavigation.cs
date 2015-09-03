@@ -16,7 +16,7 @@ namespace BuiltToRoam.Lifecycle
     {
         private IRegionManager RegionManager { get; }
 
-        private IDictionary<string, ApplicationView> Windows { get; }=new Dictionary<string, ApplicationView>(); 
+        private IDictionary<string, CoreWindow> Windows { get; }=new Dictionary<string, CoreWindow>(); 
 
         public WindowManager(IHasRegionManager root)
         {
@@ -27,8 +27,8 @@ namespace BuiltToRoam.Lifecycle
 
         private void RegionManager_RegionIsClosing(object sender, ParameterEventArgs<IApplicationRegion> e)
         {
-            var view = Windows.SafeDictionaryValue<string, ApplicationView, ApplicationView>(e.Parameter1.RegionId);
-            // Close view???
+            var view = Windows.SafeDictionaryValue<string, CoreWindow, CoreWindow>(e.Parameter1.RegionId);
+            view.Close();
 
         }
 
@@ -54,20 +54,27 @@ namespace BuiltToRoam.Lifecycle
                 }
 
 
-                await region.Startup();
+                await region.Startup(sender as IRegionManager);
                 Window.Current.Content = frame;
+
+                region.CloseRegion += Region_CloseRegion;
 
                 Window.Current.Activate();
 
                 newViewId = ApplicationView.GetForCurrentView().Id;
 
-                Windows[region.RegionId] = ApplicationView.GetForCurrentView();
+                Windows[region.RegionId] = Window.Current.CoreWindow;
             });
 
 
             var viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
             Debug.WriteLine(viewShown);
 
+        }
+
+        private void Region_CloseRegion(object sender, EventArgs e)
+        {
+            Windows[(sender as IApplicationRegion).RegionId].Close();
         }
     }
 

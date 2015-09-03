@@ -66,17 +66,21 @@ namespace StateByState
                 NavigationHelper.Register<PageStates, MainPage>(PageStates.Main);
                 NavigationHelper.Register<PageStates, SecondPage>(PageStates.Second);
                 NavigationHelper.Register<PageStates, ThirdPage>(PageStates.Third);
-                NavigationHelper.Register<SecondaryStates, MainPage>(SecondaryStates.Main);
+                NavigationHelper.Register<SecondaryStates, SeparatePage>(SecondaryStates.Main);
 
-                var core = new CoreApplication();
-                var fn = new FrameNavigation<PageStates, PageTransitions>(rootFrame, core);
-
-                var wm = new WindowManager(core);
-
+                var core = new SampleApplication();
                 await core.Startup(builder =>
                 {
                     builder.RegisterType<Special>().As<ISpecial>();
                 });
+                var region = core.RegionManager.RegionByType<MainWindow>();
+                var fn = new FrameNavigation<PageStates, PageTransitions>(rootFrame, region);
+                await region.Startup(core.RegionManager);
+                
+
+                var wm = new WindowManager(core);
+
+                
 
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation

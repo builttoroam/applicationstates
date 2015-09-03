@@ -49,9 +49,9 @@ namespace StateByState
             OnCloseRegion();
         }
 
-        public async override Task Startup()
+        protected async override Task CompleteStartup()
         {
-            await base.Startup();
+            await base.CompleteStartup();
 
             await StateManager.ChangeTo(SecondaryStates.Main);
         }

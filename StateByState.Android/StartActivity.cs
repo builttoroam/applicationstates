@@ -11,7 +11,7 @@ namespace StateByState.Android
         {
             base.OnCreate(bundle);
 
-            var core = new CoreApplication();
+            var core = new SampleApplication();
             var fn = new AcitivityNavigation<PageStates, PageTransitions>(this, core);
             fn.Register<MainActivity>(PageStates.Main);
             fn.Register<SecondActivity>(PageStates.Second);

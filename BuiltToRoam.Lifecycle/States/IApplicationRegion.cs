@@ -13,7 +13,7 @@ namespace BuiltToRoam.Lifecycle.States
 
         Task RequestClose();
 
-        
-        Task Startup();
+
+        Task Startup(IRegionManager manager);
     }
 }

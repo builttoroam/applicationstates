@@ -6,7 +6,7 @@ using Microsoft.Practices.ServiceLocation;
 
 namespace BuiltToRoam.Lifecycle
 {
-    public class RootApplication
+    public class BaseApplication
     {
         public async Task Startup(Action<ContainerBuilder> buildDependencies = null)
         {
